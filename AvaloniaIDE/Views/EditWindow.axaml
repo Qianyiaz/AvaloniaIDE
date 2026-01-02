@@ -1,0 +1,40 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AvaloniaIDE.Views.EditWindow"
+        xmlns:ale="using:AvaloniaEdit"
+        xmlns:vm="using:AvaloniaIDE.ViewModels"
+        x:DataType="vm:EditWindowViewModel"
+        Title="EditWindow">
+
+    <Grid ColumnSpacing="5" ColumnDefinitions="250,4,*">
+        <TreeView Name="FileTreeView" ItemsSource="{Binding FileTree}">
+            <TreeView.ContextFlyout>
+                <MenuFlyout>
+                    <MenuItem Header="New File" />
+                    <MenuItem Header="Rename"/>
+                    <MenuItem Header="Delete" />
+                    <MenuItem Header="Refresh" />
+                </MenuFlyout>
+            </TreeView.ContextFlyout>
+        </TreeView>
+
+        <GridSplitter Grid.Column="1" Background="WhiteSmoke" ResizeDirection="Columns" />
+
+        <ale:TextEditor
+            Grid.Column="2"
+            Name="Editor"
+            Text="Hello AvaloniaEdit!"
+            ShowLineNumbers="True"
+            FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+            <ale:TextEditor.ContextFlyout>
+                <MenuFlyout>
+                    <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}" CommandParameter="{Binding #Editor.TextArea}"/>
+                    <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}" CommandParameter="{Binding #Editor.TextArea}"/>
+                    <MenuItem Header="Paste" InputGesture="ctrl+V" Command="{Binding PasteMouseCommand}"  CommandParameter="{Binding #Editor.TextArea}"/>
+                    <MenuItem Header="-"/>
+                    <MenuItem Header="Select All" InputGesture="ctrl+A" Command="{Binding SelectAllMouseCommand}" CommandParameter="{Binding #Editor.TextArea}"/>
+                </MenuFlyout>
+            </ale:TextEditor.ContextFlyout>
+        </ale:TextEditor>
+    </Grid>
+</Window>

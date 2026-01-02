@@ -1,0 +1,43 @@
+name: Project Publishing
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - main
+    paths: [ 'AvaloniaIDE/**', '**/Publish.yml' ]
+jobs:
+  publish:
+    strategy:
+      matrix:
+        include:
+          - platform: windows-latest
+            runtime: win-x64
+          - platform: windows-latest
+            runtime: win-arm64
+          - platform: macos-latest
+            runtime: osx-x64
+          - platform: macos-latest
+            runtime: osx-arm64
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-cache-${{ matrix.runtime }}
+      - run: dotnet publish -r ${{ matrix.runtime }}
+      - if: matrix.platform == 'macos-latest'
+        working-directory: 'AvaloniaIDE/bin/Release/net10.0/${{ matrix.runtime }}/publish'
+        run: |
+          chmod +x AvaloniaIDE.app/Contents/MacOS/AvaloniaIDE
+          codesign --force --deep --sign - AvaloniaIDE.app
+          hdiutil create -volname "AvaloniaIDE" -srcfolder AvaloniaIDE.app -ov -format UDZO AvaloniaIDE.dmg
+      - uses: actions/upload-artifact@v5
+        with:
+          name: Release-${{ matrix.runtime }}
+          path: |
+            ${{ matrix.platform == 'macos-latest' && '**/*.dmg' || '**/publish' }}
+            !**/*.pdb
+            !**/*.dbg
+            !**/*.dSYM

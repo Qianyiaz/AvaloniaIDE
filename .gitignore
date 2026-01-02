@@ -1,0 +1,11 @@
+# Running cache files
+*obj
+*bin
+
+# Rider cache files
+*.idea
+*.user
+
+# VS cache files
+*.vs
+*.vscode
