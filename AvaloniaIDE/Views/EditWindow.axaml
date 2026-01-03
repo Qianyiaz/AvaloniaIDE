@@ -2,39 +2,70 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="AvaloniaIDE.Views.EditWindow"
         xmlns:ale="using:AvaloniaEdit"
+        xmlns:dha="using:DialogHostAvalonia"
         xmlns:vm="using:AvaloniaIDE.ViewModels"
-        x:DataType="vm:EditWindowViewModel"
-        Title="EditWindow">
+        x:DataType="vm:EditWindowViewModel">
 
-    <Grid ColumnSpacing="5" ColumnDefinitions="250,4,*">
-        <TreeView Name="FileTreeView" ItemsSource="{Binding FileTree}">
-            <TreeView.ContextFlyout>
-                <MenuFlyout>
-                    <MenuItem Header="New File" />
-                    <MenuItem Header="Rename"/>
-                    <MenuItem Header="Delete" />
-                    <MenuItem Header="Refresh" />
-                </MenuFlyout>
-            </TreeView.ContextFlyout>
-        </TreeView>
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="Loaded">
+            <InvokeCommandAction Command="{Binding BuildCommand}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
 
-        <GridSplitter Grid.Column="1" Background="WhiteSmoke" ResizeDirection="Columns" />
+    <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
+        <dha:DialogHost.DialogContent>
+            <Panel Width="250" Height="80">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="8"
+                    Text="Are you sure to delete it?" />
 
-        <ale:TextEditor
-            Grid.Column="2"
-            Name="Editor"
-            Text="Hello AvaloniaEdit!"
-            ShowLineNumbers="True"
-            FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
-            <ale:TextEditor.ContextFlyout>
-                <MenuFlyout>
-                    <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}" CommandParameter="{Binding #Editor.TextArea}"/>
-                    <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}" CommandParameter="{Binding #Editor.TextArea}"/>
-                    <MenuItem Header="Paste" InputGesture="ctrl+V" Command="{Binding PasteMouseCommand}"  CommandParameter="{Binding #Editor.TextArea}"/>
-                    <MenuItem Header="-"/>
-                    <MenuItem Header="Select All" InputGesture="ctrl+A" Command="{Binding SelectAllMouseCommand}" CommandParameter="{Binding #Editor.TextArea}"/>
-                </MenuFlyout>
-            </ale:TextEditor.ContextFlyout>
-        </ale:TextEditor>
-    </Grid>
+                <Button
+                    Content="Delete"
+                    Margin="8"
+                    Background="Red"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Command="{Binding #DialogHost.CloseDialogCommand}"
+                    CommandParameter="Yes" />
+            </Panel>
+        </dha:DialogHost.DialogContent>
+        <Grid ColumnSpacing="5" ColumnDefinitions="250,4,*">
+            <TreeView Name="FileTreeView" ItemsSource="{Binding FileTree}">
+                <TreeView.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuItem Header="New File" />
+                        <MenuItem Header="Rename" />
+                        <MenuItem Header="Delete" Command="{Binding #DialogHost.OpenDialogCommand}" />
+                    </MenuFlyout>
+                </TreeView.ContextFlyout>
+                <Interaction.Behaviors>
+                    <EventTriggerBehavior EventName="SelectionChanged">
+                        <InvokeCommandAction Command="{Binding ReadCommand}"
+                                             CommandParameter="{Binding $parent[TreeView].SelectedItem}" />
+                    </EventTriggerBehavior>
+                </Interaction.Behaviors>
+            </TreeView>
+
+            <GridSplitter Grid.Column="1" Background="WhiteSmoke" ResizeDirection="Columns" />
+
+            <ale:TextEditor
+                Grid.Column="2"
+                Name="Editor"
+                Text="Hello AvaloniaEdit!"
+                ShowLineNumbers="True"
+                FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+                <ale:TextEditor.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding #Editor.Copy}" />
+                        <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding #Editor.Cut}" />
+                        <MenuItem Header="Paste" InputGesture="ctrl+V" Command="{Binding #Editor.Paste}" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="Select All" InputGesture="ctrl+A" Command="{Binding #Editor.SelectAll}" />
+                    </MenuFlyout>
+                </ale:TextEditor.ContextFlyout>
+            </ale:TextEditor>
+        </Grid>
+    </dha:DialogHost>
 </Window>

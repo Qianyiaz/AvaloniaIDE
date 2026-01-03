@@ -1,52 +1,47 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaIDE.ViewModels"
-        xmlns:views="clr-namespace:AvaloniaIDE.Views"
+        xmlns:views="using:AvaloniaIDE.Views"
         x:Class="AvaloniaIDE.Views.StartWindow"
         x:DataType="vm:StartWindowViewModel"
         Title="AvaloniaIDE"
         Icon="../app.ico">
-    
+
     <Grid ColumnDefinitions="250,*">
-        <Grid Margin="35 25 0 0" ColumnSpacing="8" VerticalAlignment="Top" HorizontalAlignment="Left"  ColumnDefinitions="Auto,Auto">
-            <Image Height="55" Width="55" Source="../app.ico"/>
-            
+        <Grid Margin="35 25 0 0" ColumnSpacing="8" VerticalAlignment="Top" HorizontalAlignment="Left"
+              ColumnDefinitions="Auto,Auto">
+            <Image Height="55" Width="55" Source="../app.ico" />
+
             <StackPanel VerticalAlignment="Center" Grid.Column="1">
-                <TextBlock Text="{Binding $parent[Window].Title}"/>
-                <SelectableTextBlock Foreground="Gray" Text="v1.0.0"/>
+                <TextBlock Text="{Binding $parent[Window].Title}" />
+                <SelectableTextBlock Foreground="Gray" Text="v1.0.0" />
             </StackPanel>
         </Grid>
-        
+
         <Grid RowSpacing="5" Margin="0 8 8 0" HorizontalAlignment="Stretch" RowDefinitions="Auto,*" Grid.Column="1">
-            <Grid ColumnSpacing="5" ColumnDefinitions="*,Auto,Auto">
-                <AutoCompleteBox 
-                    ItemsSource="{Binding ItemStrings}" 
-                    Watermark="Search your project"/>
-                
+            <Grid ColumnSpacing="5" ColumnDefinitions="*,Auto">
+                <AutoCompleteBox
+                    ItemsSource="{Binding ItemStrings}"
+                    Watermark="Search your project" />
+
                 <Button Grid.Column="1" Content="Open">
                     <Interaction.Behaviors>
                         <ButtonOpenFilePickerBehavior
-                            Title="Select a solution file" 
-                            AllowMultiple="False" 
+                            Title="Select a solution file"
+                            AllowMultiple="False"
                             FileTypeFilter="|*.sln;*.slnx"
                             Command="{Binding OpenCommand}" />
                     </Interaction.Behaviors>
                 </Button>
-                
-                <Button 
-                    Grid.Column="2" 
-                    Content="Continue" 
-                    Command="{Binding ContinueCommand}"
-                    CommandParameter="{Binding $parent[Window]}"/>
             </Grid>
-            
+
             <ListBox Grid.Row="1" ItemsSource="{Binding Items}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="views:ProjectItem">
                         <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                            <Image Source="{Binding ImageSource}"/>
-                            <TextBlock Text="{Binding Name}"/>
-                            <TextBlock Foreground="Gray" Text="{Binding Path}"/>
+                            <Image Source="{Binding ImageSource}" />
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Foreground="Gray" Text="{Binding Path}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

@@ -14,28 +14,18 @@ public partial class StartWindowViewModel
     {
         _window = window;
 
-        for (var i = 0; i < 10; i++)
-        {
-            Items.Add(new (){ Name = "CAT2",Path = @"C:\Users\Unknown\RiderProjects"});
-        }
+        for (var i = 1; i < 11; i++)
+            Items.Add(new() { Name = $"CAT{i}", Path = @"C:\Users\Unknown\RiderProjects" });
     }
 
     public AvaloniaList<ProjectItem> Items { get; } = [];
 
     public IEnumerable<string> ItemStrings => Items.Select(projectItem => projectItem.Name);
-    
+
     [RelayCommand]
     private void Open(IReadOnlyList<IStorageFile> args)
     {
-        Console.WriteLine(args[0].Path);
         new EditWindow(args[0]).Show();
-        _window.Close();
-    }
-    
-    [RelayCommand]
-    private void Continue()
-    {
-        new EditWindow(null).Show();
         _window.Close();
     }
 }

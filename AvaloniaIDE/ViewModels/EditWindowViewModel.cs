@@ -2,39 +2,71 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit;
-using AvaloniaEdit.Editing;
+using AvaloniaEdit.TextMate;
 using CommunityToolkit.Mvvm.Input;
+using TextMateSharp.Grammars;
 
 namespace AvaloniaIDE.ViewModels;
 
-public partial class EditWindowViewModel
+public partial class EditWindowViewModel(IStorageFile file, TextEditor editor)
 {
-    public EditWindowViewModel(IStorageFile? file)
+    [RelayCommand]
+    private async Task Build()
     {
-        if (file != null)
-            BuildFileTree(file.GetParentAsync().Result);
+        await ReadFile(file);
+        BuildFileTree((await file.GetParentAsync())!);
+    }
+
+    [RelayCommand]
+    private async Task Read(object @object)
+    {
+        if (@object is TreeViewItem { Tag: IStorageFile storageFile })
+            await ReadFile(storageFile);
+    }
+
+    private static readonly RegistryOptions RegistryOptions = new(ThemeName.DarkPlus);
+    private readonly TextMate.Installation? _textMateInstallation = editor.InstallTextMate(RegistryOptions);
+
+    private async Task ReadFile(IStorageFile storageFile)
+    {
+        await using var stream = await storageFile.OpenReadAsync();
+        editor.Load(stream);
+
+        var extension = Path.GetExtension(storageFile.Name).ToLowerInvariant();
+        try
+        {
+            var languageByExtension = extension switch
+            {
+                ".axaml" or ".slnx" => RegistryOptions.GetLanguageByExtension(".xml"),
+                _ => RegistryOptions.GetLanguageByExtension(extension)
+            };
+
+            _textMateInstallation!.SetGrammar(RegistryOptions.GetScopeByLanguageId(languageByExtension.Id));
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public AvaloniaList<TreeViewItem> FileTree { get; } = [];
 
-    private async void BuildFileTree(IStorageFolder? rootDirectory)
+    private async void BuildFileTree(IStorageFolder rootDirectory)
     {
         FileTree.Clear();
-        if (rootDirectory == null)
-            return;
 
-        TreeViewItem? file = null;
+        TreeViewItem? treeViewItem = null;
         await foreach (var item in rootDirectory.GetItemsAsync())
         {
             switch (item)
             {
                 case IStorageFolder folder:
-                    file = await Wafsef(folder);
-                    file?.Tag = folder;
+                    treeViewItem = await CreateItem(folder);
+                    treeViewItem.Tag = folder;
                     break;
 
                 case IStorageFile sfile:
-                    file = new TreeViewItem
+                    treeViewItem = new TreeViewItem
                     {
                         Header = sfile.Name,
                         Tag = sfile
@@ -42,12 +74,11 @@ public partial class EditWindowViewModel
                     break;
             }
 
-            if (file != null) 
-                FileTree.Add(file);
+            FileTree.Add(treeViewItem!);
         }
     }
 
-    private async Task<TreeViewItem?> Wafsef(IStorageFolder folder)
+    private async Task<TreeViewItem> CreateItem(IStorageFolder folder)
     {
         var folderNode = new TreeViewItem
         {
@@ -70,37 +101,11 @@ public partial class EditWindowViewModel
                     break;
 
                 case IStorageFolder childFolder:
-                    var sub = await Wafsef(childFolder);
-                    if (sub != null)
-                        folderNode.Items.Add(sub);
+                    folderNode.Items.Add(await CreateItem(childFolder));
                     break;
             }
         }
 
         return folderNode;
-    }
-
-    [RelayCommand]
-    private void CopyMouse(TextArea textArea)
-    {
-        ApplicationCommands.Copy.Execute(null, textArea);
-    }
-
-    [RelayCommand]
-    private void CutMouse(TextArea textArea)
-    {
-        ApplicationCommands.Cut.Execute(null, textArea);
-    }
-
-    [RelayCommand]
-    private void PasteMouse(TextArea textArea)
-    {
-        ApplicationCommands.Paste.Execute(null, textArea);
-    }
-
-    [RelayCommand]
-    private void SelectAllMouse(TextArea textArea)
-    {
-        ApplicationCommands.SelectAll.Execute(null, textArea);
     }
 }
