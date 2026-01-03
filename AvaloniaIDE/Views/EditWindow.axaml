@@ -4,13 +4,8 @@
         xmlns:ale="using:AvaloniaEdit"
         xmlns:dha="using:DialogHostAvalonia"
         xmlns:vm="using:AvaloniaIDE.ViewModels"
-        x:DataType="vm:EditWindowViewModel">
-
-    <Interaction.Behaviors>
-        <EventTriggerBehavior EventName="Loaded">
-            <InvokeCommandAction Command="{Binding BuildCommand}" />
-        </EventTriggerBehavior>
-    </Interaction.Behaviors>
+        x:DataType="vm:EditWindowViewModel"
+        Loaded="OnLoaded">
 
     <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
         <dha:DialogHost.DialogContent>
@@ -32,7 +27,7 @@
             </Panel>
         </dha:DialogHost.DialogContent>
         <Grid ColumnSpacing="5" ColumnDefinitions="250,4,*">
-            <TreeView Name="FileTreeView" ItemsSource="{Binding FileTree}">
+            <TreeView Name="FileTreeView" ItemsSource="{Binding FileTree}" SelectionChanged="FileTreeView_OnSelectionChanged">
                 <TreeView.ContextFlyout>
                     <MenuFlyout>
                         <MenuItem Header="New File" />
@@ -40,12 +35,6 @@
                         <MenuItem Header="Delete" Command="{Binding #DialogHost.OpenDialogCommand}" />
                     </MenuFlyout>
                 </TreeView.ContextFlyout>
-                <Interaction.Behaviors>
-                    <EventTriggerBehavior EventName="SelectionChanged">
-                        <InvokeCommandAction Command="{Binding ReadCommand}"
-                                             CommandParameter="{Binding $parent[TreeView].SelectedItem}" />
-                    </EventTriggerBehavior>
-                </Interaction.Behaviors>
             </TreeView>
 
             <GridSplitter Grid.Column="1" Background="WhiteSmoke" ResizeDirection="Columns" />

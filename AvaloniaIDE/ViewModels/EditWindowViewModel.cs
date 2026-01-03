@@ -3,31 +3,16 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
-using CommunityToolkit.Mvvm.Input;
 using TextMateSharp.Grammars;
 
 namespace AvaloniaIDE.ViewModels;
 
-public partial class EditWindowViewModel(IStorageFile file, TextEditor editor)
+public class EditWindowViewModel(TextEditor editor)
 {
-    [RelayCommand]
-    private async Task Build()
-    {
-        await ReadFile(file);
-        BuildFileTree((await file.GetParentAsync())!);
-    }
-
-    [RelayCommand]
-    private async Task Read(object @object)
-    {
-        if (@object is TreeViewItem { Tag: IStorageFile storageFile })
-            await ReadFile(storageFile);
-    }
-
     private static readonly RegistryOptions RegistryOptions = new(ThemeName.DarkPlus);
     private readonly TextMate.Installation? _textMateInstallation = editor.InstallTextMate(RegistryOptions);
 
-    private async Task ReadFile(IStorageFile storageFile)
+    public async Task ReadFile(IStorageFile storageFile)
     {
         await using var stream = await storageFile.OpenReadAsync();
         editor.Load(stream);
@@ -51,7 +36,7 @@ public partial class EditWindowViewModel(IStorageFile file, TextEditor editor)
 
     public AvaloniaList<TreeViewItem> FileTree { get; } = [];
 
-    private async void BuildFileTree(IStorageFolder rootDirectory)
+    public async void BuildFileTree(IStorageFolder rootDirectory)
     {
         FileTree.Clear();
 
