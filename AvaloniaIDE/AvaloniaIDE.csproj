@@ -27,7 +27,7 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
-        <PackageReference Include="Xaml.Behaviors.Interactions" Version="11.3.9.3"/>
+        <PackageReference Include="Xaml.Behaviors.Interactions" Version="11.3.9.4"/>
         <PackageReference Include="HotAvalonia" Version="3.0.2" PrivateAssets="All" Publish="True"/>
         <PackageReference Condition="$(RuntimeIdentifier.StartsWith('osx'))" Include="NeoBundle" Version="1.0.3.1"/>
     </ItemGroup>
