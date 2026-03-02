@@ -17,7 +17,7 @@
     <ItemGroup>
         <AvaloniaResource Include="app.ico"/>
         <PackageReference Include="Avalonia" Version="11.3.12"/>
-        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.3.0"/>
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.4.1"/>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.12"/>
         <PackageReference Include="DialogHost.Avalonia" Version="0.10.4"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.11"/>
