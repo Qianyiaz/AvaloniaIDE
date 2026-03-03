@@ -11,7 +11,6 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <PublishAot>true</PublishAot>
         <OptimizationPreference>Size</OptimizationPreference>
-        <InvariantGlobalization>true</InvariantGlobalization>
         <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
     </PropertyGroup>
 

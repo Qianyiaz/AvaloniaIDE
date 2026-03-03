@@ -13,8 +13,8 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
-        var window = new StartWindow();
-        window.DataContext = new StartWindowViewModel(window);
+        var window = new MainWindow();
+        window.DataContext = new MainWindowViewModel(window);
         desktop.MainWindow = window;
     }
 }

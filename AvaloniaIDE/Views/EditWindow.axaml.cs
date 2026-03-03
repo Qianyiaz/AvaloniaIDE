@@ -1,42 +1,153 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using AvaloniaIDE.ViewModels;
+using AvaloniaEdit;
+using AvaloniaEdit.TextMate;
+using TextMateSharp.Grammars;
 
 namespace AvaloniaIDE.Views;
 
 public partial class EditWindow : Window
 {
-    private readonly EditWindowViewModel _vm;
     private readonly IStorageFile _file;
+    private readonly FileReader _fileReader;
 
     public EditWindow(IStorageFile file)
     {
         InitializeComponent();
+        _fileReader = new FileReader(Editor);
         _file = file;
         Title = file.Name;
-        _vm = new EditWindowViewModel(Editor);
-        DataContext = _vm;
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        await _vm.ReadFile(_file);
-        _vm.BuildFileTree((await _file.GetParentAsync())!);
+        TabControl.Items.Add(new MyTabItem
+        {
+            Header = _file.Name, 
+            StorageFile = _file
+        });
+        BuildFileTree((await _file.GetParentAsync())!);
     }
 
-    private async void FileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void FileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (sender is not TreeView treeView) return;
         if (treeView.SelectedItem is not TreeViewItem { Tag: IStorageFile storageFile }) return;
-        TabControl.Items.Add(new TabItem { Header = storageFile.Name, Tag = storageFile });
-        await _vm.ReadFile(storageFile);
+        TabControl.Items.Add(new MyTabItem
+        {
+            Header = storageFile.Name, 
+            StorageFile = storageFile
+        });
     }
 
     private async void TabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (sender is not TabControl tabControl) return;
-        if (tabControl.SelectedItem is not TabItem { Tag: IStorageFile storageFile }) return;
-        await _vm.ReadFile(storageFile);
+        if (tabControl.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
+        await _fileReader.ReadFile(storageFile);
     }
+
+    public async void BuildFileTree(IStorageFolder rootDirectory)
+    {
+        FileTreeView.Items.Clear();
+
+        TreeViewItem? treeViewItem = null;
+        await foreach (var item in rootDirectory.GetItemsAsync())
+        {
+            switch (item)
+            {
+                case IStorageFolder folder:
+                    treeViewItem = await CreateItem(folder);
+                    treeViewItem.Tag = folder;
+                    break;
+
+                case IStorageFile sfile:
+                    treeViewItem = new TreeViewItem
+                    {
+                        Header = sfile.Name,
+                        Tag = sfile
+                    };
+                    break;
+            }
+
+            FileTreeView.Items.Add(treeViewItem!);
+        }
+    }
+
+    private async Task<TreeViewItem> CreateItem(IStorageFolder folder)
+    {
+        var folderNode = new TreeViewItem
+        {
+            Header = folder.Name,
+            Tag = folder
+        };
+
+        await foreach (var item in folder.GetItemsAsync())
+        {
+            var childNode = new TreeViewItem
+            {
+                Header = item.Name
+            };
+
+            switch (item)
+            {
+                case IStorageFile childFile:
+                    childNode.Tag = childFile;
+                    folderNode.Items.Add(childNode);
+                    break;
+
+                case IStorageFolder childFolder:
+                    folderNode.Items.Add(await CreateItem(childFolder));
+                    break;
+            }
+        }
+
+        return folderNode;
+    }
+
+    private void CloceItem(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        if (button.DataContext is not MyTabItem) return;
+        TabControl.Items.Remove(button.DataContext);
+        if (TabControl.Items.Count != 0) return;
+        Editor.Clear();
+        Editor.Text = "Please open a file to edit.";
+    }
+}
+
+public class FileReader(TextEditor editor)
+{
+    private static readonly RegistryOptions RegistryOptions = new(ThemeName.DarkPlus);
+    private readonly TextMate.Installation? _textMateInstallation = editor.InstallTextMate(RegistryOptions);
+
+    public async Task ReadFile(IStorageFile storageFile)
+    {
+        await using var stream = await storageFile.OpenReadAsync();
+        editor.Load(stream);
+
+        var extension = Path.GetExtension(storageFile.Name).ToLowerInvariant();
+        try
+        {
+            var languageByExtension = extension switch
+            {
+                ".axaml" or ".slnx" or ".user" => RegistryOptions.GetLanguageByExtension(".xml"),
+                _ => RegistryOptions.GetLanguageByExtension(extension)
+            };
+
+            _textMateInstallation!.SetGrammar(RegistryOptions.GetScopeByLanguageId(languageByExtension.Id));
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+}
+
+public class MyTabItem
+{
+    public string Header { get; set; } = string.Empty;
+    public IStorageFile StorageFile { get; init; } = null!;
+    public override string ToString() => string.Empty;
 }

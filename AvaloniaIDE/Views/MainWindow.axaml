@@ -1,9 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaIDE.ViewModels"
-        xmlns:views="using:AvaloniaIDE.Views"
-        x:Class="AvaloniaIDE.Views.StartWindow"
-        x:DataType="vm:StartWindowViewModel"
+        xmlns:local="using:AvaloniaIDE.Views"
+        x:Class="AvaloniaIDE.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="AvaloniaIDE"
         Icon="../app.ico">
 
@@ -15,23 +15,20 @@
     </Window.Styles>
 
     <Grid ColumnDefinitions="250,4,*">
-        <Grid ColumnSpacing="8" Margin="35 25 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
-              ColumnDefinitions="Auto,Auto">
-            <Image Height="55" Width="55" Source="../app.ico" />
-
-            <StackPanel VerticalAlignment="Center" Grid.Column="1">
+        <StackPanel Orientation="Horizontal" Margin="35,25,0,0" VerticalAlignment="Top">
+            <Image Height="55" Width="55" Source="../app.ico" Margin="0,0,8,0" />
+            <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="AvaloniaIDE" />
-                <SelectableTextBlock Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}"
-                                     Text="v1.0.0" />
+                <SelectableTextBlock Text="v1.0.0"
+                                     Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}" />
             </StackPanel>
-        </Grid>
-
+        </StackPanel>
+        
         <Border Grid.Column="1" Background="{DynamicResource SystemControlTransientBackgroundBrush}" />
-
-        <Grid RowSpacing="5" Margin="8" HorizontalAlignment="Stretch" RowDefinitions="Auto,*,Auto" Grid.Column="2">
-            <Grid ColumnSpacing="5" ColumnDefinitions="*,Auto">
+        
+        <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto" RowSpacing="5" Margin="8">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
                 <AutoCompleteBox Watermark="Search your projects" />
-
                 <Button Grid.Column="1" Content="Open Sln File">
                     <Interaction.Behaviors>
                         <ButtonOpenFilePickerBehavior
@@ -42,23 +39,22 @@
                     </Interaction.Behaviors>
                 </Button>
             </Grid>
-
+            
             <ListBox Grid.Row="1" ItemsSource="{Binding Items}" Background="Transparent" SelectionMode="Toggle">
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="views:ProjectItem">
-                        <Grid ColumnSpacing="8" ColumnDefinitions="Auto,Auto">
+                    <DataTemplate DataType="local:ProjectItem">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                             <Image Height="45" Width="45" Source="{Binding ImageSource}" />
-
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding Name}" />
-                                <TextBlock Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}"
-                                           Text="{Binding Path}" />
+                                <TextBlock Text="{Binding Path}"
+                                           Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}" />
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-
+            
             <CheckBox Grid.Row="2" Content="Auto-open last sln" />
         </Grid>
     </Grid>

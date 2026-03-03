@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvaloniaIDE.ViewModels;
 
-public partial class StartWindowViewModel(Window window)
+public partial class MainWindowViewModel(Window window)
 {
     public AvaloniaList<ProjectItem> Items { get; } = [];
 

@@ -3,9 +3,9 @@ using Avalonia.Media;
 
 namespace AvaloniaIDE.Views;
 
-public partial class StartWindow : Window
+public partial class MainWindow : Window
 {
-    public StartWindow() => InitializeComponent();
+    public MainWindow() => InitializeComponent();
 }
 
 public class ProjectItem

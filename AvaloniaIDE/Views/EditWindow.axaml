@@ -3,8 +3,7 @@
         x:Class="AvaloniaIDE.Views.EditWindow"
         xmlns:ale="using:AvaloniaEdit"
         xmlns:dha="using:DialogHostAvalonia"
-        xmlns:vm="using:AvaloniaIDE.ViewModels"
-        x:DataType="vm:EditWindowViewModel"
+        xmlns:local="using:AvaloniaIDE.Views"
         Loaded="OnLoaded">
 
     <dha:DialogHost Name="DialogHost" CloseOnClickAway="True">
@@ -26,8 +25,8 @@
                     CommandParameter="Yes" />
             </Panel>
         </dha:DialogHost.DialogContent>
-        <Grid RowDefinitions="Auto,*">
-            <Grid Margin="5">
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="5">
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5">
                     <ComboBox SelectedValue="App.Example">
                         <ComboBox.Items>
@@ -38,10 +37,9 @@
                     <Button>Run</Button>
                 </StackPanel>
             </Grid>
-
-            <Grid Grid.Row="1" ColumnSpacing="5" ColumnDefinitions="250,4,*">
-                <TreeView Name="FileTreeView" ItemsSource="{Binding FileTree}"
-                          SelectionChanged="FileTreeView_OnSelectionChanged">
+            
+            <Grid ColumnDefinitions="250,2,*">
+                <TreeView Name="FileTreeView" SelectionChanged="FileTreeView_OnSelectionChanged" BorderThickness="0 2 0 0" BorderBrush="{DynamicResource SystemControlTransientBackgroundBrush}">
                     <TreeView.ContextFlyout>
                         <MenuFlyout>
                             <MenuItem Header="New File" />
@@ -50,17 +48,30 @@
                         </MenuFlyout>
                     </TreeView.ContextFlyout>
                 </TreeView>
-
+                
                 <GridSplitter Grid.Column="1" Background="{DynamicResource SystemControlTransientBackgroundBrush}"
                               ResizeDirection="Columns" />
-
+                
                 <Grid Grid.Column="2" RowDefinitions="Auto,*">
-                    <TabControl Name="TabControl" SelectionChanged="TabControl_OnSelectionChanged"/>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                        <TabControl BorderThickness="2" BorderBrush="{DynamicResource SystemControlTransientBackgroundBrush}" Name="TabControl" SelectionChanged="TabControl_OnSelectionChanged">
+                            <TabControl.ItemTemplate>
+                                <DataTemplate DataType="local:MyTabItem">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock FontSize="15" Text="{Binding Header}" Margin="8,4" />
+                                        <Button Grid.Column="1" Click="CloceItem">
+                                            <PathIcon Height="10" Width="10"
+                                                      Data="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z" />
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
+                        </TabControl>
+                    </ScrollViewer>
 
                     <ale:TextEditor
                         Name="Editor"
                         Grid.Row="1"
-                        Text="Hello AvaloniaEdit!"
                         ShowLineNumbers="True"
                         FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
                         <ale:TextEditor.ContextFlyout>
@@ -76,6 +87,6 @@
                     </ale:TextEditor>
                 </Grid>
             </Grid>
-        </Grid>
+        </DockPanel>
     </dha:DialogHost>
 </Window>
