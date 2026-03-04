@@ -149,5 +149,5 @@ public class MyTabItem
 {
     public string Header { get; set; } = string.Empty;
     public IStorageFile StorageFile { get; init; } = null!;
-    public override string ToString() => string.Empty;
+    public override string ToString() => null!;
 }
