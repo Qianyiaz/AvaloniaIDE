@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit;
@@ -22,7 +23,7 @@ public partial class EditWindow : Window
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        TabControl.Items.Add(new MyTabItem
+        TabStrip.Items.Add(new MyTabItem
         {
             Header = _file.Name,
             StorageFile = _file
@@ -40,13 +41,13 @@ public partial class EditWindow : Window
             Header = storageFile.Name,
             StorageFile = storageFile
         };
-        TabControl.Items.Add(myTabItem);
-        TabControl.SelectedItem = myTabItem;
+        TabStrip.Items.Add(myTabItem);
+        TabStrip.SelectedItem = myTabItem;
     }
 
     private async void TabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (sender is not TabControl tabControl) return;
+        if (sender is not TabStrip tabControl) return;
         if (tabControl.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
         Editor.IsReadOnly = false;
         await _fileReader.ReadFile(storageFile);
@@ -114,8 +115,8 @@ public partial class EditWindow : Window
     {
         if (sender is not Button button) return;
         if (button.DataContext is not MyTabItem) return;
-        TabControl.Items.Remove(button.DataContext);
-        if (TabControl.Items.Count != 0) return;
+        TabStrip.Items.Remove(button.DataContext);
+        if (TabStrip.Items.Count != 0) return;
         Editor.Clear();
         Editor.Text = "Please open a file to edit.";
         Editor.IsReadOnly = true;

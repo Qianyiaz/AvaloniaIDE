@@ -46,6 +46,7 @@
             <Grid
                 Grid.Row="1"
                 Margin="0,5,0,0"
+                ColumnSpacing="5"
                 ColumnDefinitions="250,4,*">
                 <TreeView
                     Name="FileTreeView"
@@ -70,10 +71,11 @@
                     Grid.Column="2"
                     RowDefinitions="Auto,*">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
-                        <TabControl
-                            Name="TabControl"
+                        <TabStrip
+                            Margin="5"
+                            Name="TabStrip"
                             SelectionChanged="TabControl_OnSelectionChanged">
-                            <TabControl.ItemTemplate>
+                            <TabStrip.ItemTemplate>
                                 <DataTemplate DataType="local:MyTabItem">
                                     <DockPanel>
                                         <TextBlock
@@ -89,8 +91,8 @@
                                         </Button>
                                     </DockPanel>
                                 </DataTemplate>
-                            </TabControl.ItemTemplate>
-                        </TabControl>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
                     </ScrollViewer>
 
                     <ale:TextEditor
