@@ -24,7 +24,7 @@ public partial class EditWindow : Window
     {
         TabControl.Items.Add(new MyTabItem
         {
-            Header = _file.Name, 
+            Header = _file.Name,
             StorageFile = _file
         });
         BuildFileTree((await _file.GetParentAsync())!);
@@ -34,21 +34,25 @@ public partial class EditWindow : Window
     {
         if (sender is not TreeView treeView) return;
         if (treeView.SelectedItem is not TreeViewItem { Tag: IStorageFile storageFile }) return;
-        TabControl.Items.Add(new MyTabItem
+
+        var myTabItem = new MyTabItem
         {
-            Header = storageFile.Name, 
+            Header = storageFile.Name,
             StorageFile = storageFile
-        });
+        };
+        TabControl.Items.Add(myTabItem);
+        TabControl.SelectedItem = myTabItem;
     }
 
     private async void TabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (sender is not TabControl tabControl) return;
         if (tabControl.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
+        Editor.IsReadOnly = false;
         await _fileReader.ReadFile(storageFile);
     }
 
-    public async void BuildFileTree(IStorageFolder rootDirectory)
+    private async void BuildFileTree(IStorageFolder rootDirectory)
     {
         FileTreeView.Items.Clear();
 
@@ -114,6 +118,7 @@ public partial class EditWindow : Window
         if (TabControl.Items.Count != 0) return;
         Editor.Clear();
         Editor.Text = "Please open a file to edit.";
+        Editor.IsReadOnly = true;
     }
 }
 

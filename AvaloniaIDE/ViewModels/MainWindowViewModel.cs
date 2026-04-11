@@ -10,16 +10,16 @@ namespace AvaloniaIDE.ViewModels;
 
 public partial class MainWindowViewModel(Window window)
 {
-    public AvaloniaList<ProjectItem> Items { get; } = 
+    public AvaloniaList<ProjectItem> Items { get; } =
     [
-        new ()
+        new()
         {
-            Name = "Test", 
+            Name = "Test",
             Path = @"C:\Users\Administrator\Desktop\test.txt",
             ImageSource = new Bitmap(AssetLoader.Open(new("avares://AvaloniaIDE/Assets/DeviconTrello.png"))),
         }
     ];
-    
+
     [RelayCommand]
     private void Open(IReadOnlyList<IStorageFile> args)
     {
