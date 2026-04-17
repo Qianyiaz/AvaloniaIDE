@@ -69,7 +69,7 @@
 
                 <Grid
                     Grid.Column="2"
-                    RowDefinitions="Auto,*">
+                    RowDefinitions="Auto,*,Auto">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <TabStrip
                             Margin="5"
@@ -122,6 +122,10 @@
                             </MenuFlyout>
                         </ale:TextEditor.ContextFlyout>
                     </ale:TextEditor>
+                    
+                    <Border Grid.Row="2" Padding="5" Background="BlueViolet">
+                        <TextBlock Text="{Binding #Editor.Options.LineHeightFactor}"/>
+                    </Border>
                 </Grid>
             </Grid>
         </Grid>
