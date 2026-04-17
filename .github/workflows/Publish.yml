@@ -21,13 +21,13 @@ jobs:
             runtime: osx-arm64
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/cache@v5.0.5
         with:
           path: ~/.nuget/packages
           key: nuget-cache-${{ matrix.runtime }}
       - run: dotnet publish -r ${{ matrix.runtime }}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: Release-${{ matrix.runtime }}
           path: |
