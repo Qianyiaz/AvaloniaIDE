@@ -9,6 +9,7 @@
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <PublishAot>true</PublishAot>
+        <IlcScanReflection>false</IlcScanReflection>
         <StackTraceSupport>false</StackTraceSupport>
         <UseSystemResourceKeys>true</UseSystemResourceKeys>
         <OptimizationPreference>Size</OptimizationPreference>
