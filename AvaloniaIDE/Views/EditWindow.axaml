@@ -5,6 +5,8 @@
     xmlns:ale="using:AvaloniaEdit"
     xmlns:dha="using:DialogHostAvalonia"
     xmlns:local="using:AvaloniaIDE.Views"
+    TransparencyLevelHint="Mica,AcrylicBlur,None"
+    Background="Transparent"
     Loaded="OnLoaded">
 
     <dha:DialogHost
@@ -100,6 +102,10 @@
                             FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
                             <ale:TextEditor.ContextFlyout>
                                 <MenuFlyout>
+                                    <MenuItem
+                                        Header="Save"
+                                        InputGesture="ctrl+S"
+                                        Click="SavedFile_OnClick" />
                                     <MenuItem
                                         Header="Copy"
                                         InputGesture="ctrl+C"

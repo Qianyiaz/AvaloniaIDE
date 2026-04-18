@@ -5,6 +5,8 @@
     xmlns:local="using:AvaloniaIDE.Views"
     x:Class="AvaloniaIDE.Views.MainWindow"
     x:DataType="vm:MainWindowViewModel"
+    TransparencyLevelHint="Mica,AcrylicBlur,None"
+    Background="Transparent"
     Title="AvaloniaIDE"
     Icon="../app.ico">
 
@@ -69,21 +71,20 @@
                     Background="Transparent">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="local:ProjectItem">
-                            <Grid
-                                ColumnSpacing="8"
-                                ColumnDefinitions="Auto,*">
+                            <DockPanel HorizontalSpacing="5">
                                 <Image
+                                    DockPanel.Dock="Left"
                                     Height="45" Width="45"
                                     Source="{Binding ImageSource}" />
+                                
                                 <StackPanel
-                                    Grid.Column="1"
                                     VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Name}" />
                                     <TextBlock
                                         Text="{Binding Path}"
                                         Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}" />
                                 </StackPanel>
-                            </Grid>
+                            </DockPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

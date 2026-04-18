@@ -127,6 +127,13 @@ public partial class EditWindow : Window
         Editor.Text = "Please open a file to edit.";
         Editor.IsReadOnly = true;
     }
+
+    private void SavedFile_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (TabStrip.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
+        using var stream = storageFile.OpenWriteAsync().GetAwaiter().GetResult();
+        Editor.Save(stream);
+    }
 }
 
 public class FileReader(TextEditor editor)
