@@ -13,6 +13,7 @@
         <StackTraceSupport>false</StackTraceSupport>
         <UseSystemResourceKeys>true</UseSystemResourceKeys>
         <OptimizationPreference>Size</OptimizationPreference>
+        <InvariantGlobalization>true</InvariantGlobalization>
         <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
     </PropertyGroup>
 
