@@ -23,24 +23,33 @@ public partial class EditWindow : Window
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        BuildFileTree((await _file.GetParentAsync())!);
+
         TabStrip.Items.Add(new MyTabItem
         {
             Header = _file.Name,
             StorageFile = _file
         });
-        BuildFileTree((await _file.GetParentAsync())!);
     }
 
     private void FileTreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (sender is not TreeView treeView) return;
         if (treeView.SelectedItem is not TreeViewItem { Tag: IStorageFile storageFile }) return;
-
+        
+        foreach (var item in TabStrip.Items)
+        {
+            if (item is not MyTabItem { StorageFile: { } file } || file.Path != storageFile.Path) continue;
+            TabStrip.SelectedItem = item;
+            return;
+        }
+        
         var myTabItem = new MyTabItem
         {
             Header = storageFile.Name,
             StorageFile = storageFile
         };
+        
         TabStrip.Items.Add(myTabItem);
         TabStrip.SelectedItem = myTabItem;
     }
@@ -90,10 +99,7 @@ public partial class EditWindow : Window
 
         await foreach (var item in folder.GetItemsAsync())
         {
-            var childNode = new TreeViewItem
-            {
-                Header = item.Name
-            };
+            var childNode = new TreeViewItem { Header = item.Name };
 
             switch (item)
             {
@@ -139,6 +145,7 @@ public class FileReader(TextEditor editor)
             var languageByExtension = extension switch
             {
                 ".axaml" or ".slnx" or ".user" => RegistryOptions.GetLanguageByExtension(".xml"),
+                ".godot" or ".tscn" => RegistryOptions.GetLanguageByExtension(".ini"),
                 _ => RegistryOptions.GetLanguageByExtension(extension)
             };
 

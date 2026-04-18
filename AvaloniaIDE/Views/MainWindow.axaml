@@ -36,11 +36,12 @@
             Grid.Column="1"
             Background="{DynamicResource SystemControlTransientBackgroundBrush}" />
 
-        <Grid
+        <DockPanel
+            Margin="8"
             Grid.Column="2"
-            RowDefinitions="Auto,*,Auto"
-            RowSpacing="5" Margin="8">
+            VerticalSpacing="5">
             <Grid
+                DockPanel.Dock="Top"
                 ColumnDefinitions="*,Auto"
                 ColumnSpacing="5">
                 <AutoCompleteBox PlaceholderText="Search your projects" />
@@ -57,35 +58,36 @@
                 </Button>
             </Grid>
 
-            <ListBox
-                Grid.Row="1"
-                ItemsSource="{Binding Items}"
-                Background="Transparent"
-                SelectionMode="Toggle">
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="local:ProjectItem">
-                        <Grid
-                            ColumnSpacing="8"
-                            ColumnDefinitions="Auto,*">
-                            <Image
-                                Height="45" Width="45"
-                                Source="{Binding ImageSource}" />
-                            <StackPanel
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Name}" />
-                                <TextBlock
-                                    Text="{Binding Path}"
-                                    Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}" />
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-
             <CheckBox
-                Grid.Row="2"
+                DockPanel.Dock="Bottom"
                 Content="Auto-open last sln" />
-        </Grid>
+            
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ListBox
+                    SelectionMode="Toggle"
+                    ItemsSource="{Binding Items}"
+                    Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="local:ProjectItem">
+                            <Grid
+                                ColumnSpacing="8"
+                                ColumnDefinitions="Auto,*">
+                                <Image
+                                    Height="45" Width="45"
+                                    Source="{Binding ImageSource}" />
+                                <StackPanel
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock
+                                        Text="{Binding Path}"
+                                        Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+        </DockPanel>
     </Grid>
 </Window>
