@@ -1,10 +1,12 @@
-﻿using Avalonia.Collections;
+﻿using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using AvaloniaIDE.Views;
 using CommunityToolkit.Mvvm.Input;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace AvaloniaIDE.ViewModels;
 
@@ -21,9 +23,23 @@ public partial class MainWindowViewModel(Window window)
     ];
 
     [RelayCommand]
-    private void Open(IReadOnlyList<IStorageFile> args)
+    private async Task OpenAsnyc()
     {
-        new EditWindow(args[0]).Show();
+        if (Application.Current!.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
+
+        var mainWindow = desktop.MainWindow;
+        var topLevel = TopLevel.GetTopLevel(mainWindow);
+
+        var files = await topLevel!.StorageProvider.OpenFilePickerAsync(new()
+        {
+            Title = "Open a File",
+            AllowMultiple = false,
+            FileTypeFilter = [new FilePickerFileType("Solution Files") { Patterns = ["*.sln", "*.slnx"] }]
+        });
+
+        if (files.Count < 1) return;
+        
+        new EditWindow(files[0]).Show();
         window.Close();
     }
 }

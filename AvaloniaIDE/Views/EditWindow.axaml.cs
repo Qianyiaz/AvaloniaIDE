@@ -117,7 +117,7 @@ public partial class EditWindow : Window
         return folderNode;
     }
 
-    private void CloceItem(object? sender, RoutedEventArgs e)
+    private void CloseItem(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
         if (button.DataContext is not MyTabItem) return;
@@ -128,15 +128,15 @@ public partial class EditWindow : Window
         Editor.IsReadOnly = true;
     }
 
-    private void SavedFile_OnClick(object? sender, RoutedEventArgs e)
+    private async void SavedFile_OnClick(object? sender, RoutedEventArgs e)
     {
         if (TabStrip.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
-        using var stream = storageFile.OpenWriteAsync().GetAwaiter().GetResult();
+        await using var stream = await storageFile.OpenWriteAsync();
         Editor.Save(stream);
     }
 }
 
-public class FileReader(TextEditor editor)
+public class FileReader(TextEditor editor) : IDisposable
 {
     private static readonly RegistryOptions RegistryOptions = new(ThemeName.DarkPlus);
     private readonly TextMate.Installation? _textMateInstallation = editor.InstallTextMate(RegistryOptions);
@@ -163,11 +163,12 @@ public class FileReader(TextEditor editor)
             // ignored
         }
     }
+
+    public void Dispose() => _textMateInstallation?.Dispose();
 }
 
 public class MyTabItem
 {
     public string Header { get; set; } = string.Empty;
     public IStorageFile StorageFile { get; init; } = null!;
-    public override string ToString() => null!;
 }

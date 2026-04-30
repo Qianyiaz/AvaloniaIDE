@@ -49,15 +49,8 @@
                 <AutoCompleteBox PlaceholderText="Search your projects" />
                 <Button
                     Grid.Column="1"
-                    Content="Open Sln File">
-                    <Interaction.Behaviors>
-                        <ButtonOpenFilePickerBehavior
-                            Title="Open a File"
-                            AllowMultiple="False"
-                            FileTypeFilter="Solution Files|*.sln;*.slnx"
-                            Command="{Binding OpenCommand}" />
-                    </Interaction.Behaviors>
-                </Button>
+                    Content="Open Sln File"
+                    Command="{Binding OpenAsnycCommand}"/>
             </Grid>
 
             <CheckBox

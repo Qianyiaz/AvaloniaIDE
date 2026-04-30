@@ -1,11 +1,16 @@
 using Avalonia.Controls;
 using Avalonia.Media;
+using AvaloniaIDE.ViewModels;
 
 namespace AvaloniaIDE.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow() => InitializeComponent();
+    public MainWindow()
+    {
+        DataContext = new MainWindowViewModel(this);
+        InitializeComponent();
+    }
 }
 
 public class ProjectItem

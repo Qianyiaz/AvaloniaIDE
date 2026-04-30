@@ -83,7 +83,7 @@
                                             Text="{Binding Header}"
                                             Margin="0 0 8 0" />
                                         <Button
-                                            Click="CloceItem"
+                                            Click="CloseItem"
                                             DockPanel.Dock="Right">
                                             <PathIcon
                                                 Height="10" Width="10"
