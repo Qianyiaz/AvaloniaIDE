@@ -38,7 +38,7 @@ public partial class MainWindowViewModel(Window window)
         });
 
         if (files.Count < 1) return;
-        
+
         new EditWindow(files[0]).Show();
         window.Close();
     }

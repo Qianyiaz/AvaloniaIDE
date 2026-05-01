@@ -30,104 +30,102 @@
                     CommandParameter="Yes" />
             </Panel>
         </dha:DialogHost.DialogContent>
-        
-            <Grid
-                Margin="0,5,0,0"
-                ColumnSpacing="5"
-                ColumnDefinitions="250,4,*">
-                <TreeView
-                    Name="FileTreeView"
-                    SelectionChanged="FileTreeView_OnSelectionChanged">
-                    <TreeView.ContextFlyout>
-                        <MenuFlyout>
-                            <MenuItem Header="New File" />
-                            <MenuItem Header="Rename" />
-                            <MenuItem
-                                Header="Delete"
-                                Command="{Binding #DialogHost.OpenDialogCommand}" />
-                        </MenuFlyout>
-                    </TreeView.ContextFlyout>
-                </TreeView>
 
-                <GridSplitter
-                    Grid.Column="1"
-                    ResizeDirection="Columns"
-                    Background="{DynamicResource SystemControlTransientBackgroundBrush}" />
+        <Grid
+            Margin="0,5,0,0"
+            ColumnDefinitions="250,4,*">
+            <TreeView
+                Name="FileTreeView"
+                SelectionChanged="FileTreeView_OnSelectionChanged">
+                <TreeView.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuItem Header="New File" />
+                        <MenuItem Header="Rename" />
+                        <MenuItem
+                            Header="Delete"
+                            Command="{Binding #DialogHost.OpenDialogCommand}" />
+                    </MenuFlyout>
+                </TreeView.ContextFlyout>
+            </TreeView>
 
-                <DockPanel
-                    Grid.Column="2">
-                    <StackPanel
-                        DockPanel.Dock="Top"
-                        Spacing="5" Margin="5"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                        <ComboBox SelectedValue="App.Example">
-                            <ComboBox.Items>
-                                <x:String>App.Example</x:String>
-                            </ComboBox.Items>
-                        </ComboBox>
-                        <Button Content="Build" />
-                        <Button Content="Run" />
-                    </StackPanel>
-                    
-                    <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto">
-                        <TabStrip
-                            Margin="5"
-                            Name="TabStrip"
-                            SelectionChanged="TabControl_OnSelectionChanged">
-                            <TabStrip.ItemTemplate>
-                                <DataTemplate DataType="local:MyTabItem">
-                                    <DockPanel>
-                                        <TextBlock
-                                            FontSize="15"
-                                            Text="{Binding Header}"
-                                            Margin="0 0 8 0" />
-                                        <Button
-                                            Click="CloseItem"
-                                            DockPanel.Dock="Right">
-                                            <PathIcon
-                                                Height="10" Width="10"
-                                                Data="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z" />
-                                        </Button>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </TabStrip.ItemTemplate>
-                        </TabStrip>
-                    </ScrollViewer>
+            <GridSplitter
+                Grid.Column="1"
+                ResizeDirection="Columns"
+                Background="{DynamicResource SystemControlTransientBackgroundBrush}" />
 
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <ale:TextEditor
-                            Name="Editor"
-                            ShowLineNumbers="True"
-                            FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
-                            <ale:TextEditor.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuItem
-                                        Header="Save"
-                                        InputGesture="ctrl+S"
-                                        Click="SavedFile_OnClick" />
-                                    <MenuItem
-                                        Header="Copy"
-                                        InputGesture="ctrl+C"
-                                        Command="{Binding #Editor.Copy}" />
-                                    <MenuItem
-                                        Header="Cut"
-                                        InputGesture="ctrl+X"
-                                        Command="{Binding #Editor.Cut}" />
-                                    <MenuItem
-                                        Header="Paste"
-                                        InputGesture="ctrl+V"
-                                        Command="{Binding #Editor.Paste}" />
-                                    <MenuItem Header="-" />
-                                    <MenuItem
-                                        Header="Select All"
-                                        InputGesture="ctrl+A"
-                                        Command="{Binding #Editor.SelectAll}" />
-                                </MenuFlyout>
-                            </ale:TextEditor.ContextFlyout>
-                        </ale:TextEditor>
-                    </ScrollViewer>
-                </DockPanel>
-            </Grid>
+            <DockPanel
+                Grid.Column="2">
+                <StackPanel
+                    DockPanel.Dock="Top"
+                    Spacing="5" Margin="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+                    <ComboBox SelectedValue="App.Example">
+                        <ComboBox.Items>
+                            <x:String>App.Example</x:String>
+                        </ComboBox.Items>
+                    </ComboBox>
+                    <Button Content="Build" />
+                    <Button Content="Run" />
+                </StackPanel>
+
+                <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto">
+                    <TabStrip
+                        Name="TabStrip"
+                        SelectionChanged="TabControl_OnSelectionChanged">
+                        <TabStrip.ItemTemplate>
+                            <DataTemplate DataType="local:MyTabItem">
+                                <DockPanel>
+                                    <TextBlock
+                                        FontSize="15"
+                                        Margin="0 0 5 0"
+                                        Text="{Binding Header}" />
+                                    <Button
+                                        Click="CloseItem"
+                                        DockPanel.Dock="Right">
+                                        <PathIcon
+                                            Height="8" Width="8"
+                                            Data="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z" />
+                                    </Button>
+                                </DockPanel>
+                            </DataTemplate>
+                        </TabStrip.ItemTemplate>
+                    </TabStrip>
+                </ScrollViewer>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ale:TextEditor
+                        Name="Editor"
+                        ShowLineNumbers="True"
+                        FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+                        <ale:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem
+                                    Header="Save"
+                                    InputGesture="ctrl+S"
+                                    Click="SavedFile_OnClick" />
+                                <MenuItem
+                                    Header="Copy"
+                                    InputGesture="ctrl+C"
+                                    Command="{Binding #Editor.Copy}" />
+                                <MenuItem
+                                    Header="Cut"
+                                    InputGesture="ctrl+X"
+                                    Command="{Binding #Editor.Cut}" />
+                                <MenuItem
+                                    Header="Paste"
+                                    InputGesture="ctrl+V"
+                                    Command="{Binding #Editor.Paste}" />
+                                <MenuItem Header="-" />
+                                <MenuItem
+                                    Header="Select All"
+                                    InputGesture="ctrl+A"
+                                    Command="{Binding #Editor.SelectAll}" />
+                            </MenuFlyout>
+                        </ale:TextEditor.ContextFlyout>
+                    </ale:TextEditor>
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
     </dha:DialogHost>
 </Window>

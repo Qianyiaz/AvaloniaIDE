@@ -50,13 +50,13 @@
                 <Button
                     Grid.Column="1"
                     Content="Open Sln File"
-                    Command="{Binding OpenAsnycCommand}"/>
+                    Command="{Binding OpenAsnycCommand}" />
             </Grid>
 
             <CheckBox
                 DockPanel.Dock="Bottom"
                 Content="Auto-open last sln" />
-            
+
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ListBox
                     SelectionMode="Toggle"
@@ -69,7 +69,7 @@
                                     DockPanel.Dock="Left"
                                     Height="45" Width="45"
                                     Source="{Binding ImageSource}" />
-                                
+
                                 <StackPanel
                                     VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Name}" />

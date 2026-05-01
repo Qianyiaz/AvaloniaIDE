@@ -36,20 +36,20 @@ public partial class EditWindow : Window
     {
         if (sender is not TreeView treeView) return;
         if (treeView.SelectedItem is not TreeViewItem { Tag: IStorageFile storageFile }) return;
-        
+
         foreach (var item in TabStrip.Items)
         {
             if (item is not MyTabItem { StorageFile: { } file } || file.Path != storageFile.Path) continue;
             TabStrip.SelectedItem = item;
             return;
         }
-        
+
         var myTabItem = new MyTabItem
         {
             Header = storageFile.Name,
             StorageFile = storageFile
         };
-        
+
         TabStrip.Items.Add(myTabItem);
         TabStrip.SelectedItem = myTabItem;
     }
@@ -62,60 +62,12 @@ public partial class EditWindow : Window
         await _fileReader.ReadFile(storageFile);
     }
 
-    private async void BuildFileTree(IStorageFolder rootDirectory)
+    private async void OnItemExpanded(object? sender, RoutedEventArgs e)
     {
-        FileTreeView.Items.Clear();
-
-        TreeViewItem? treeViewItem = null;
-        await foreach (var item in rootDirectory.GetItemsAsync())
-        {
-            switch (item)
-            {
-                case IStorageFolder folder:
-                    treeViewItem = await CreateItem(folder);
-                    treeViewItem.Tag = folder;
-                    break;
-
-                case IStorageFile sfile:
-                    treeViewItem = new TreeViewItem
-                    {
-                        Header = sfile.Name,
-                        Tag = sfile
-                    };
-                    break;
-            }
-
-            FileTreeView.Items.Add(treeViewItem!);
-        }
+        if (sender is TreeViewItem item)
+            await LoadChildren(item);
     }
 
-    private async Task<TreeViewItem> CreateItem(IStorageFolder folder)
-    {
-        var folderNode = new TreeViewItem
-        {
-            Header = folder.Name,
-            Tag = folder
-        };
-
-        await foreach (var item in folder.GetItemsAsync())
-        {
-            var childNode = new TreeViewItem { Header = item.Name };
-
-            switch (item)
-            {
-                case IStorageFile childFile:
-                    childNode.Tag = childFile;
-                    folderNode.Items.Add(childNode);
-                    break;
-
-                case IStorageFolder childFolder:
-                    folderNode.Items.Add(await CreateItem(childFolder));
-                    break;
-            }
-        }
-
-        return folderNode;
-    }
 
     private void CloseItem(object? sender, RoutedEventArgs e)
     {
@@ -133,6 +85,58 @@ public partial class EditWindow : Window
         if (TabStrip.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
         await using var stream = await storageFile.OpenWriteAsync();
         Editor.Save(stream);
+    }
+
+    private readonly TreeViewItem _item = new() { Header = "Loading" };
+
+    private async void BuildFileTree(IStorageFolder rootDirectory)
+    {
+        FileTreeView.Items.Clear();
+
+        await foreach (var item in rootDirectory.GetItemsAsync())
+        {
+            TreeViewItem treeViewItem = null!;
+            switch (item)
+            {
+                case IStorageFolder folder:
+                    treeViewItem = new TreeViewItem { Header = folder.Name, Tag = folder, Items = { _item } };
+                    treeViewItem.Expanded += OnItemExpanded;
+                    break;
+
+                case IStorageFile sfile:
+                    treeViewItem = new TreeViewItem
+                    {
+                        Header = sfile.Name,
+                        Tag = sfile
+                    };
+                    break;
+            }
+
+            FileTreeView.Items.Add(treeViewItem);
+        }
+    }
+
+    private async Task LoadChildren(TreeViewItem item)
+    {
+        if (item.Tag is not IStorageFolder folder) return;
+        item.Items.Clear();
+        item.Expanded -= OnItemExpanded;
+
+        await foreach (var child in folder.GetItemsAsync())
+        {
+            switch (child)
+            {
+                case IStorageFile file:
+                    item.Items.Add(new TreeViewItem { Header = file.Name, Tag = file });
+                    break;
+
+                case IStorageFolder subfolder:
+                    var childItem = new TreeViewItem { Header = subfolder.Name, Tag = subfolder, Items = { _item } };
+                    childItem.Expanded += OnItemExpanded;
+                    item.Items.Add(childItem);
+                    break;
+            }
+        }
     }
 }
 
