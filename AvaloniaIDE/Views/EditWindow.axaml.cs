@@ -87,8 +87,6 @@ public partial class EditWindow : Window
         Editor.Save(stream);
     }
 
-    private readonly TreeViewItem _item = new() { Header = "Loading" };
-
     private async void BuildFileTree(IStorageFolder rootDirectory)
     {
         FileTreeView.Items.Clear();
@@ -99,7 +97,10 @@ public partial class EditWindow : Window
             switch (item)
             {
                 case IStorageFolder folder:
-                    treeViewItem = new TreeViewItem { Header = folder.Name, Tag = folder, Items = { _item } };
+                    if (folder.Name is ".git" or "bin" or "obj" or ".vs" or ".idea" or ".godot")
+                        continue;
+                    
+                    treeViewItem = new TreeViewItem { Header = folder.Name, Tag = folder, Items = { null } };
                     treeViewItem.Expanded += OnItemExpanded;
                     break;
 
@@ -131,7 +132,7 @@ public partial class EditWindow : Window
                     break;
 
                 case IStorageFolder subfolder:
-                    var childItem = new TreeViewItem { Header = subfolder.Name, Tag = subfolder, Items = { _item } };
+                    var childItem = new TreeViewItem { Header = subfolder.Name, Tag = subfolder, Items = { null } };
                     childItem.Expanded += OnItemExpanded;
                     item.Items.Add(childItem);
                     break;
