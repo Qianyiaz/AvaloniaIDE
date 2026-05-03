@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit;
@@ -10,15 +11,18 @@ namespace AvaloniaIDE.Views;
 
 public partial class EditWindow : Window
 {
-    private readonly IStorageFile _file;
-    private readonly FileReader _fileReader;
+    private IStorageFile _file = null!;
+    private FileReader _fileReader = null!;
 
-    public EditWindow(IStorageFile file)
+    public EditWindow() => InitializeComponent();
+
+    public void Initialize(IStorageFile file)
     {
-        InitializeComponent();
-        _fileReader = new FileReader(Editor);
         _file = file;
+        _fileReader = new FileReader(Editor);
+
         Title = file.Name;
+        Loaded += OnLoaded;
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -68,7 +72,6 @@ public partial class EditWindow : Window
             await LoadChildren(item);
     }
 
-
     private void CloseItem(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -87,6 +90,18 @@ public partial class EditWindow : Window
         Editor.Save(stream);
     }
 
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        if (e is { KeyModifiers: KeyModifiers.Control, Key: Key.S })
+        {
+            SavedFile_OnClick(this, e);
+            e.Handled = true;
+            return;
+        }
+
+        base.OnKeyDown(e);
+    }
+
     private async void BuildFileTree(IStorageFolder rootDirectory)
     {
         FileTreeView.Items.Clear();
@@ -99,7 +114,7 @@ public partial class EditWindow : Window
                 case IStorageFolder folder:
                     if (folder.Name is ".git" or "bin" or "obj" or ".vs" or ".idea" or ".godot")
                         continue;
-                    
+
                     treeViewItem = new TreeViewItem { Header = folder.Name, Tag = folder, Items = { null } };
                     treeViewItem.Expanded += OnItemExpanded;
                     break;
@@ -141,10 +156,12 @@ public partial class EditWindow : Window
     }
 }
 
-public class FileReader(TextEditor editor) : IDisposable
+public sealed class FileReader(TextEditor editor) : IDisposable
 {
     private static readonly RegistryOptions RegistryOptions = new(ThemeName.DarkPlus);
     private readonly TextMate.Installation? _textMateInstallation = editor.InstallTextMate(RegistryOptions);
+
+    public void Dispose() => _textMateInstallation?.Dispose();
 
     public async Task ReadFile(IStorageFile storageFile)
     {
@@ -152,24 +169,26 @@ public class FileReader(TextEditor editor) : IDisposable
         editor.Load(stream);
 
         var extension = Path.GetExtension(storageFile.Name).ToLowerInvariant();
-        try
-        {
-            var languageByExtension = extension switch
-            {
-                ".axaml" or ".slnx" or ".user" => RegistryOptions.GetLanguageByExtension(".xml"),
-                ".godot" or ".tscn" => RegistryOptions.GetLanguageByExtension(".ini"),
-                _ => RegistryOptions.GetLanguageByExtension(extension)
-            };
 
-            _textMateInstallation!.SetGrammar(RegistryOptions.GetScopeByLanguageId(languageByExtension.Id));
-        }
-        catch
+        var language = GetLanguageForExtension(extension);
+        if (language is not null && _textMateInstallation is not null)
         {
-            // ignored
+            var scope = RegistryOptions.GetScopeByLanguageId(language.Id);
+            _textMateInstallation.SetGrammar(scope);
         }
     }
 
-    public void Dispose() => _textMateInstallation?.Dispose();
+    private static Language? GetLanguageForExtension(string lowerExtension)
+    {
+        var mappedExtension = lowerExtension switch
+        {
+            ".axaml" or ".slnx" or ".user" => ".xml",
+            ".godot" or ".tscn" => ".ini",
+            _ => lowerExtension
+        };
+
+        return RegistryOptions.GetLanguageByExtension(mappedExtension);
+    }
 }
 
 public class MyTabItem

@@ -6,8 +6,7 @@
     xmlns:dha="using:DialogHostAvalonia"
     xmlns:local="using:AvaloniaIDE.Views"
     TransparencyLevelHint="Mica,AcrylicBlur,None"
-    Background="Transparent"
-    Loaded="OnLoaded">
+    Background="Transparent">
 
     <dha:DialogHost
         Name="DialogHost"
@@ -102,7 +101,7 @@
                             <MenuFlyout>
                                 <MenuItem
                                     Header="Save"
-                                    InputGesture="ctrl+S"
+                                    HotKey="ctrl+S"
                                     Click="SavedFile_OnClick" />
                                 <MenuItem
                                     Header="Copy"

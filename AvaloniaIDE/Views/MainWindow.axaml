@@ -4,11 +4,15 @@
     xmlns:vm="using:AvaloniaIDE.ViewModels"
     xmlns:local="using:AvaloniaIDE.Views"
     x:Class="AvaloniaIDE.Views.MainWindow"
-    x:DataType="vm:MainWindowViewModel"
+    x:DataType="vm:MainViewModel"
     TransparencyLevelHint="Mica,AcrylicBlur,None"
     Background="Transparent"
     Title="AvaloniaIDE"
     Icon="../app.ico">
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
 
     <Window.Styles>
         <Style Selector="ListBoxItem">

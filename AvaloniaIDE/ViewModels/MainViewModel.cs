@@ -1,16 +1,16 @@
 ﻿using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using AvaloniaIDE.Views;
 using CommunityToolkit.Mvvm.Input;
-using Avalonia.Controls.ApplicationLifetimes;
 
 namespace AvaloniaIDE.ViewModels;
 
-public partial class MainWindowViewModel(Window window)
+public partial class MainViewModel
 {
     public AvaloniaList<ProjectItem> Items { get; } =
     [
@@ -37,9 +37,10 @@ public partial class MainWindowViewModel(Window window)
             FileTypeFilter = [new FilePickerFileType("Solution Files") { Patterns = ["*.sln", "*.slnx"] }]
         });
 
-        if (files.Count < 1) return;
+        var editWindow = new EditWindow();
+        editWindow.Show();
+        editWindow.Initialize(files[0]);
 
-        new EditWindow(files[0]).Show();
-        window.Close();
+        mainWindow!.Hide();
     }
 }
