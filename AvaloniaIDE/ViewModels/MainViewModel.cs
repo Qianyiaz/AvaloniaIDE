@@ -40,6 +40,7 @@ public partial class MainViewModel
         var editWindow = new EditWindow();
         editWindow.Show();
         editWindow.Initialize(files[0]);
+        editWindow.Closed += (_, _) => mainWindow!.Show();
 
         mainWindow!.Hide();
     }
