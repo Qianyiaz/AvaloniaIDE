@@ -171,11 +171,9 @@ public sealed class FileReader(TextEditor editor) : IDisposable
         var extension = Path.GetExtension(storageFile.Name).ToLowerInvariant();
 
         var language = GetLanguageForExtension(extension);
-        if (language is not null && _textMateInstallation is not null)
-        {
-            var scope = RegistryOptions.GetScopeByLanguageId(language.Id);
-            _textMateInstallation.SetGrammar(scope);
-        }
+        if (language is null) return;
+        
+        _textMateInstallation!.SetGrammar(RegistryOptions.GetScopeByLanguageId(language.Id));
     }
 
     private static Language? GetLanguageForExtension(string lowerExtension)

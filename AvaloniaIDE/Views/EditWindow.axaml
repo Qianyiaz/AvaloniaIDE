@@ -101,7 +101,7 @@
                             <MenuFlyout>
                                 <MenuItem
                                     Header="Save"
-                                    HotKey="ctrl+S"
+                                    InputGesture="ctrl+S"
                                     Click="SavedFile_OnClick" />
                                 <MenuItem
                                     Header="Copy"
