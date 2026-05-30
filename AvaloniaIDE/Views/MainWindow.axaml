@@ -1,18 +1,12 @@
 <Window
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:AvaloniaIDE.ViewModels"
     xmlns:local="using:AvaloniaIDE.Views"
     x:Class="AvaloniaIDE.Views.MainWindow"
-    x:DataType="vm:MainViewModel"
     TransparencyLevelHint="Mica,AcrylicBlur,None"
     Background="Transparent"
     Title="AvaloniaIDE"
     Icon="../app.ico">
-
-    <Window.DataContext>
-        <vm:MainViewModel />
-    </Window.DataContext>
 
     <Window.Styles>
         <Style Selector="ListBoxItem">
@@ -53,8 +47,8 @@
                 <AutoCompleteBox PlaceholderText="Search your projects" />
                 <Button
                     Grid.Column="1"
-                    Content="Open Sln File"
-                    Command="{Binding OpenAsnycCommand}" />
+                    Click="OpenSolutionClick"
+                    Content="Open Sln File" />
             </Grid>
 
             <CheckBox
@@ -62,29 +56,7 @@
                 Content="Auto-open last sln" />
 
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ListBox
-                    SelectionMode="Toggle"
-                    ItemsSource="{Binding Items}"
-                    Background="Transparent">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate DataType="local:ProjectItem">
-                            <DockPanel HorizontalSpacing="5">
-                                <Image
-                                    DockPanel.Dock="Left"
-                                    Height="45" Width="45"
-                                    Source="{Binding ImageSource}" />
-
-                                <StackPanel
-                                    VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" />
-                                    <TextBlock
-                                        Text="{Binding Path}"
-                                        Foreground="{DynamicResource SystemControlDescriptionTextForegroundBrush}" />
-                                </StackPanel>
-                            </DockPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                TO DO...
             </ScrollViewer>
         </DockPanel>
     </Grid>

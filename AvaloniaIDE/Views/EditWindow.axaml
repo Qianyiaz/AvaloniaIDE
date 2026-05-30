@@ -4,7 +4,7 @@
     x:Class="AvaloniaIDE.Views.EditWindow"
     xmlns:ale="using:AvaloniaEdit"
     xmlns:dha="using:DialogHostAvalonia"
-    xmlns:local="using:AvaloniaIDE.Views"
+    xmlns:models="using:AvaloniaIDE.Models"
     TransparencyLevelHint="Mica,AcrylicBlur,None"
     Background="Transparent">
 
@@ -73,7 +73,7 @@
                         Name="TabStrip"
                         SelectionChanged="TabControl_OnSelectionChanged">
                         <TabStrip.ItemTemplate>
-                            <DataTemplate DataType="local:MyTabItem">
+                            <DataTemplate DataType="models:MyTabItem">
                                 <DockPanel>
                                     <TextBlock
                                         FontSize="15"

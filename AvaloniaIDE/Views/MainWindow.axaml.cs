@@ -1,16 +1,30 @@
 using Avalonia.Controls;
-using Avalonia.Media;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 
 namespace AvaloniaIDE.Views;
 
 public partial class MainWindow : Window
 {
     public MainWindow() => InitializeComponent();
-}
 
-public class ProjectItem
-{
-    public IImage? ImageSource { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Path { get; set; } = string.Empty;
+    private async void OpenSolutionClick(object? sender, RoutedEventArgs e)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(new()
+        {
+            Title = "Open a File",
+            AllowMultiple = false,
+            FileTypeFilter = [new FilePickerFileType("Solution Files") { Patterns = ["*.sln", "*.slnx"] }]
+        });
+
+        if (files.Count == 0)
+            return;
+
+        var editWindow = new EditWindow();
+        editWindow.Show();
+        editWindow.Initialize(files[0]);
+        editWindow.Closed += (_, _) => Show();
+        
+        Hide();
+    }
 }
