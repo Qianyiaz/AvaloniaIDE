@@ -21,7 +21,7 @@ public sealed class FileReader(TextEditor editor) : IDisposable
 
         var language = GetLanguageForExtension(extension);
         if (language is null) return;
-        
+
         _textMateInstallation!.SetGrammar(RegistryOptions.GetScopeByLanguageId(language.Id));
     }
 

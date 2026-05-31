@@ -1,4 +1,7 @@
-﻿using Avalonia.Controls;
+﻿using System.Diagnostics;
+using System.Text;
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -81,7 +84,7 @@ public partial class EditWindow : Window
         Editor.IsReadOnly = true;
     }
 
-    private async void SavedFile_OnClick(object? sender, RoutedEventArgs e)
+    private async void SaveFile_OnClick(object? sender, RoutedEventArgs e)
     {
         if (TabStrip.SelectedItem is not MyTabItem { StorageFile: { } storageFile }) return;
         await using var stream = await storageFile.OpenWriteAsync();
@@ -92,7 +95,7 @@ public partial class EditWindow : Window
     {
         if (e is { KeyModifiers: KeyModifiers.Control, Key: Key.S })
         {
-            SavedFile_OnClick(this, e);
+            SaveFile_OnClick(this, e);
             e.Handled = true;
             return;
         }
@@ -150,6 +153,48 @@ public partial class EditWindow : Window
                     item.Items.Add(childItem);
                     break;
             }
+        }
+    }
+
+    private async void BuildProject(object? sender, RoutedEventArgs e)
+    {
+        NotificationManager.Show(new Notification("Building", $"Compiling {_file.Path.AbsolutePath}..."));
+
+        using var process = new Process();
+        process.StartInfo = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            Arguments = $"build \"{_file.Path.AbsolutePath}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
+        };
+
+        var output = new StringBuilder();
+        var error = new StringBuilder();
+
+        process.OutputDataReceived += (_, args) => output.AppendLine(args.Data);
+        process.ErrorDataReceived += (_, args) => error.AppendLine(args.Data);
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode == 0)
+        {
+            NotificationManager.Show(new Notification("Build succeeded",
+                $"Project {_file.Path} built successfully!\n{output}",
+                NotificationType.Success, TimeSpan.FromSeconds(5)));
+        }
+        else
+        {
+            NotificationManager.Show(new Notification("Build failed",
+                $"Exit code: {process.ExitCode}\nError details:\n{error}",
+                NotificationType.Error, TimeSpan.FromSeconds(8)));
         }
     }
 }

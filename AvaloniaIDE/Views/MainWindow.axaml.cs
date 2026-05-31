@@ -24,7 +24,7 @@ public partial class MainWindow : Window
         editWindow.Show();
         editWindow.Initialize(files[0]);
         editWindow.Closed += (_, _) => Show();
-        
+
         Hide();
     }
 }
