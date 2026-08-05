@@ -1,135 +1,35 @@
-﻿<Window
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    x:Class="AvaloniaIDE.Views.EditWindow"
-    xmlns:ale="using:AvaloniaEdit"
-    xmlns:dha="using:DialogHostAvalonia"
-    xmlns:models="using:AvaloniaIDE.Models"
-    TransparencyLevelHint="Mica,AcrylicBlur,None"
-    Background="Transparent">
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaIDE.ViewModels"
+        xmlns:aedit="https://github.com/avaloniaui/avaloniaedit"
+        x:Class="AvaloniaIDE.Views.EditWindow"
+        x:DataType="vm:EditWindowViewModel"
+        Name="RootWindow"
+        Title="EditWindow">
+    <DockControl InitializeLayout="True" InitializeFactory="True">
+        <DockControl.Factory>
+            <Factory />
+        </DockControl.Factory>
+        <RootDock>
+            <ProportionalDock>
+                <ToolDock Proportion="0.25" Alignment="Left" CanClose="False" Title="Solution">
+                    <Tool Id="SolutionTool" Title="Solution" CanClose="False">
+                        <TreeView />
+                    </Tool>
+                </ToolDock>
+                
+                <ProportionalDockSplitter CanResize="True" />
 
-    <dha:DialogHost
-        Name="DialogHost"
-        CloseOnClickAway="True">
-        <dha:DialogHost.DialogContent>
-            <Panel Width="250" Height="80">
-                <TextBlock
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Margin="8"
-                    Text="Are you sure to delete it?" />
-
-                <Button
-                    Content="Delete"
-                    Margin="8"
-                    Background="Red"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Command="{Binding #DialogHost.CloseDialogCommand}"
-                    CommandParameter="Yes" />
-            </Panel>
-        </dha:DialogHost.DialogContent>
-
-        <Panel>
-            <Grid
-                Margin="0,5,0,0"
-                ColumnDefinitions="250,4,*">
-                <TreeView
-                    Name="FileTreeView"
-                    SelectionChanged="FileTreeView_OnSelectionChanged">
-                    <TreeView.ContextFlyout>
-                        <MenuFlyout>
-                            <MenuItem Header="New File" />
-                            <MenuItem Header="Rename" />
-                            <MenuItem
-                                Header="Delete"
-                                Command="{Binding #DialogHost.OpenDialogCommand}" />
-                        </MenuFlyout>
-                    </TreeView.ContextFlyout>
-                </TreeView>
-
-                <GridSplitter
-                    Grid.Column="1"
-                    ResizeDirection="Columns"
-                    Background="{DynamicResource SystemControlTransientBackgroundBrush}" />
-
-                <DockPanel
-                    Grid.Column="2">
-                    <StackPanel
-                        DockPanel.Dock="Top"
-                        Spacing="5" Margin="5"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                        <ComboBox SelectedValue="App.Example">
-                            <ComboBox.Items>
-                                <x:String>App.Example</x:String>
-                            </ComboBox.Items>
-                        </ComboBox>
-                        <Button Click="BuildProject" Content="Build" />
-                        <Button Content="Run" />
-                    </StackPanel>
-
-                    <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto">
-                        <TabStrip
-                            Name="TabStrip"
-                            SelectionChanged="TabControl_OnSelectionChanged">
-                            <TabStrip.ItemTemplate>
-                                <DataTemplate DataType="models:MyTabItem">
-                                    <DockPanel>
-                                        <TextBlock
-                                            FontSize="15"
-                                            Margin="0 0 5 0"
-                                            Text="{Binding Header}" />
-                                        <Button
-                                            Click="CloseItem"
-                                            DockPanel.Dock="Right">
-                                            <PathIcon
-                                                Height="8" Width="8"
-                                                Data="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z" />
-                                        </Button>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </TabStrip.ItemTemplate>
-                        </TabStrip>
-                    </ScrollViewer>
-
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <ale:TextEditor
-                            Name="Editor"
-                            ShowLineNumbers="True"
-                            FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
-                            <ale:TextEditor.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuItem
-                                        Header="Save"
-                                        InputGesture="ctrl+S"
-                                        Click="SaveFile_OnClick" />
-                                    <MenuItem Header="-" />
-                                    <MenuItem
-                                        Header="Copy"
-                                        InputGesture="ctrl+C"
-                                        Command="{Binding #Editor.Copy}" />
-                                    <MenuItem
-                                        Header="Cut"
-                                        InputGesture="ctrl+X"
-                                        Command="{Binding #Editor.Cut}" />
-                                    <MenuItem
-                                        Header="Paste"
-                                        InputGesture="ctrl+V"
-                                        Command="{Binding #Editor.Paste}" />
-                                    <MenuItem Header="-" />
-                                    <MenuItem
-                                        Header="Select All"
-                                        InputGesture="ctrl+A"
-                                        Command="{Binding #Editor.SelectAll}" />
-                                </MenuFlyout>
-                            </ale:TextEditor.ContextFlyout>
-                        </ale:TextEditor>
-                    </ScrollViewer>
-                </DockPanel>
-            </Grid>
-
-            <WindowNotificationManager x:Name="NotificationManager" Position="BottomRight" MaxItems="3" />
-        </Panel>
-    </dha:DialogHost>
+                <DocumentDock Proportion="0.75"
+                              ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).Documents}">
+                    <DocumentDock.DocumentTemplate>
+                        <DocumentTemplate>
+                            <aedit:TextEditor ShowLineNumbers="True"
+                                              FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+                        </DocumentTemplate>
+                    </DocumentDock.DocumentTemplate>
+                </DocumentDock>
+            </ProportionalDock>
+        </RootDock>
+    </DockControl>
 </Window>

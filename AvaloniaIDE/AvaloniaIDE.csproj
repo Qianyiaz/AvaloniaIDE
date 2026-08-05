@@ -3,7 +3,6 @@
         <Nullable>enable</Nullable>
         <OutputType>WinExe</OutputType>
         <ImplicitUsings>true</ImplicitUsings>
-        <ApplicationIcon>app.ico</ApplicationIcon>
         <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
@@ -16,17 +15,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="app.ico"/>
-        <AvaloniaResource Include="Assets\**"/>
-        <PackageReference Include="Avalonia.Desktop" Version="12.1.*"/>
-        <PackageReference Include="DialogHost.Avalonia" Version="0.12.*"/>
-        <PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.*"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.*"/>
+        <PackageReference Include="Jab" Version="0.12.0"/>
+        <PackageReference Include="Avalonia.Desktop" Version="12.1.1"/>
+        <PackageReference Include="Dock.Model.Avalonia" Version="12.1.0"/>
+        <PackageReference Include="DialogHost.Avalonia" Version="0.12.3"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.0"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1"/>
+        <PackageReference Include="Xaml.Behaviors.Avalonia" Version="12.0.5"/>
+        <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="12.1.0"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.*"/>
-        <PackageReference Include="HotAvalonia" Version="3.1.*" PrivateAssets="All"/>
-        <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.*" PrivateAssets="All"/>
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3"/>
+        <PackageReference Include="HotAvalonia" Version="3.1.4" PrivateAssets="All"/>
+        <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.1" PrivateAssets="All"/>
     </ItemGroup>
 </Project>

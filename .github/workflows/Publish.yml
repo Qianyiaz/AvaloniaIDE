@@ -13,12 +13,6 @@ jobs:
         include:
           - platform: windows-latest
             runtime: win-x64
-          - platform: windows-latest
-            runtime: win-arm64
-          - platform: macos-latest
-            runtime: osx-x64
-          - platform: macos-latest
-            runtime: osx-arm64
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6.0.2
