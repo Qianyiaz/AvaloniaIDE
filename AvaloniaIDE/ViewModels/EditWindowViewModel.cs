@@ -11,11 +11,13 @@ namespace AvaloniaIDE.ViewModels;
 
 public partial class EditWindowViewModel : ObservableObject
 {
+    [ObservableProperty] private FileNode? _selectedFileItem;
+
+    public EditWindowViewModel(IStorageFile storageFile) => _ = LoadDocumentAsync(storageFile);
+
     public AvaloniaList<FileDocument> Documents { get; } = [];
 
     public AvaloniaList<FileNode> FileItems { get; } = [];
-
-    [ObservableProperty] private FileNode? _selectedFileItem;
 
     async partial void OnSelectedFileItemChanged(FileNode? value)
     {
@@ -24,8 +26,6 @@ public partial class EditWindowViewModel : ObservableObject
 
         Documents.Add(await FileDocument.CreateAsync(file));
     }
-
-    public EditWindowViewModel(IStorageFile storageFile) => _ = LoadDocumentAsync(storageFile);
 
     private async Task LoadDocumentAsync(IStorageFile storageFile)
     {
