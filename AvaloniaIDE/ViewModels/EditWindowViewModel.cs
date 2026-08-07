@@ -19,10 +19,11 @@ public partial class EditWindowViewModel : ObservableObject
 
     async partial void OnSelectedFileItemChanged(FileNode? value)
     {
-        if (value!.StorageItem is not IStorageFile file) return;
+        if (value?.StorageItem is not IStorageFile file) return;
         if (Documents.Any(d => d.StorageItem!.Path == file.Path)) return;
 
         Documents.Add(await FileDocument.CreateAsync(file));
+        SelectedFileItem = null;
     }
 
     public EditWindowViewModel(IStorageFile storageFile) => _ = LoadDocumentAsync(storageFile);
