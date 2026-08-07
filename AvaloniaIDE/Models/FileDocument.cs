@@ -7,7 +7,7 @@ namespace AvaloniaIDE.Models;
 public class FileDocument(TextDocument document, IStorageItem? storageItem = null)
 {
     public TextDocument Document { get; } = document;
-    
+
     public IStorageItem? StorageItem { get; } = storageItem;
 
     public static async Task<FileDocument> CreateAsync(IStorageFile storageFile)
