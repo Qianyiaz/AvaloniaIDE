@@ -1,14 +1,9 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text;
-using Avalonia.Collections;
+﻿using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit;
-using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
+using AvaloniaIDE.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -18,15 +13,14 @@ public partial class EditWindowViewModel : ObservableObject
 {
     public AvaloniaList<FileDocument> Documents { get; } = [];
 
-    public AvaloniaList<TreeViewItem> FileItems { get; } = [];
+    public AvaloniaList<FileNode> FileItems { get; } = [];
 
-    [ObservableProperty] private TreeViewItem? _selectedFileItem;
+    [ObservableProperty] private FileNode? _selectedFileItem;
 
-    async partial void OnSelectedFileItemChanged(TreeViewItem? value)
+    async partial void OnSelectedFileItemChanged(FileNode? value)
     {
-        if (value!.Tag is not IStorageFile file) return;
-        if (Documents.Any(d => d.Document.FileName == file.Name))
-            return;
+        if (value!.StorageItem is not IStorageFile file) return;
+        if (Documents.Any(d => d.StorageItem == file)) return;
 
         Documents.Add(await FileDocument.CreateAsync(file));
     }
@@ -35,68 +29,20 @@ public partial class EditWindowViewModel : ObservableObject
 
     private async Task LoadDocumentAsync(IStorageFile storageFile)
     {
-        BuildFileTree((await storageFile.GetParentAsync())!);
+        await foreach (var item in (await storageFile.GetParentAsync())!.GetItemsAsync())
+            FileItems.Add(item switch
+            {
+                IStorageFolder folder => new(folder.Name, [null], folder),
+                IStorageFile file => new(file.Name, null, file),
+                _ => null!
+            });
+
         Documents.Add(await FileDocument.CreateAsync(storageFile));
     }
 
-    private async void BuildFileTree(IStorageFolder rootDirectory)
-    {
-        FileItems.Clear();
-
-        await foreach (var item in rootDirectory.GetItemsAsync())
-        {
-            TreeViewItem treeViewItem = null!;
-            switch (item)
-            {
-                case IStorageFolder folder:
-                    if (folder.Name is ".git" or "bin" or "obj" or ".vs" or ".idea" or ".godot")
-                        continue;
-
-                    treeViewItem = new TreeViewItem { Header = folder.Name, Tag = folder, Items = { null } };
-                    treeViewItem.Expanded += OnItemExpanded;
-                    break;
-
-                case IStorageFile file:
-                    treeViewItem = new TreeViewItem
-                    {
-                        Header = file.Name,
-                        Tag = file
-                    };
-                    break;
-            }
-
-            FileItems.Add(treeViewItem);
-        }
-    }
-
-    private async void OnItemExpanded(object? sender, RoutedEventArgs e)
-    {
-        if (sender is TreeViewItem item)
-            await LoadChildren(item);
-    }
-
-    private async Task LoadChildren(TreeViewItem item)
-    {
-        if (item.Tag is not IStorageFolder folder) return;
-        item.Items.Clear();
-        item.Expanded -= OnItemExpanded;
-
-        await foreach (var child in folder.GetItemsAsync())
-        {
-            switch (child)
-            {
-                case IStorageFile file:
-                    item.Items.Add(new TreeViewItem { Header = file.Name, Tag = file });
-                    break;
-
-                case IStorageFolder subfolder:
-                    var childItem = new TreeViewItem { Header = subfolder.Name, Tag = subfolder, Items = { null } };
-                    item.Items.Add(childItem);
-                    childItem.Expanded += OnItemExpanded;
-                    break;
-            }
-        }
-    }
+    [RelayCommand]
+    private async Task TreeViewItemExpanded(TreeViewItem item) =>
+        await FileNode.LoadChildren(item.DataContext as FileNode);
 
     [RelayCommand]
     private void CopyMouse(TextArea textArea) => ApplicationCommands.Copy.Execute(null, textArea);
@@ -112,22 +58,4 @@ public partial class EditWindowViewModel : ObservableObject
 
     [RelayCommand]
     private void UndoMouse(TextArea textArea) => ApplicationCommands.Undo.Execute(null, textArea);
-}
-
-public class FileDocument(TextDocument document)
-{
-    // ReSharper disable once UnusedMember.Global
-    public string Title { get; } = document.FileName;
-    // This is used reflectively in AvaloniaEdit's TabControl to display the title of the document.
-
-    public static async Task<FileDocument> CreateAsync(IStorageFile storageFile)
-    {
-        await using var stream = await storageFile.OpenReadAsync();
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-        var content = await reader.ReadToEndAsync();
-
-        return new FileDocument(new TextDocument(content) { FileName = storageFile.Name });
-    }
-
-    public TextDocument Document { get; } = document;
 }

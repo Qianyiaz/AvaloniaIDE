@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaIDE.ViewModels"
         xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:models="using:AvaloniaIDE.Models"
         x:Class="AvaloniaIDE.Views.EditWindow"
         x:DataType="vm:EditWindowViewModel"
         Name="RootWindow"
@@ -10,7 +11,7 @@
         <DockControl.Factory>
             <Factory />
         </DockControl.Factory>
-        <RootDock IsCollapsable="False">
+        <RootDock>
             <ProportionalDock>
                 <ToolDock Proportion="0.25" CanClose="False">
                     <Tool Id="SolutionTool" Title="Solution" CanClose="False">
@@ -19,21 +20,39 @@
                     <Tool Id="FileTool" Title="File System" CanClose="False">
                         <TreeView
                             SelectedItem="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectedFileItem}"
-                            ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).FileItems}" />
+                            ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).FileItems}">
+                            <TreeView.Styles>
+                                <Style Selector="TreeViewItem">
+                                    <Setter Property="(Interaction.Behaviors)">
+                                        <BehaviorCollectionTemplate>
+                                            <BehaviorCollection>
+                                                <TreeViewItemExpandedEventCommandTrigger
+                                                    Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).TreeViewItemExpandedCommand}" />
+                                            </BehaviorCollection>
+                                        </BehaviorCollectionTemplate>
+                                    </Setter>
+                                </Style>
+                            </TreeView.Styles>
+
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding SubNodes}">
+                                    <TextBlock Text="{Binding Title}" />
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
                     </Tool>
                 </ToolDock>
 
                 <ProportionalDockSplitter CanResize="True" />
 
                 <DocumentDock Proportion="0.75"
-                              CanClose="False"
                               ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).Documents}">
                     <DocumentDock.DocumentTemplate>
                         <DocumentTemplate x:DataType="Document">
                             <ContentControl DataContext="{Binding Context}">
                                 <edit:TextEditor Name="Editor"
                                                  ShowLineNumbers="True"
-                                                 x:DataType="vm:FileDocument"
+                                                 x:DataType="models:FileDocument"
                                                  DocumentChanged="Editor_OnDocumentChanged"
                                                  Document="{Binding Document}"
                                                  FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
