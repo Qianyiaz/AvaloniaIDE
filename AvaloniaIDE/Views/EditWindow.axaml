@@ -1,7 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaIDE.ViewModels"
-        xmlns:aedit="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
         x:Class="AvaloniaIDE.Views.EditWindow"
         x:DataType="vm:EditWindowViewModel"
         Name="RootWindow"
@@ -10,22 +10,60 @@
         <DockControl.Factory>
             <Factory />
         </DockControl.Factory>
-        <RootDock>
+        <RootDock IsCollapsable="False">
             <ProportionalDock>
-                <ToolDock Proportion="0.25" Alignment="Left" CanClose="False" Title="Solution">
+                <ToolDock Proportion="0.25" CanClose="False">
                     <Tool Id="SolutionTool" Title="Solution" CanClose="False">
-                        <TreeView />
+                        <TextBlock Text="To Do,Try File System." />
+                    </Tool>
+                    <Tool Id="FileTool" Title="File System" CanClose="False">
+                        <TreeView
+                            SelectedItem="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectedFileItem}"
+                            ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).FileItems}" />
                     </Tool>
                 </ToolDock>
-                
+
                 <ProportionalDockSplitter CanResize="True" />
 
                 <DocumentDock Proportion="0.75"
+                              CanClose="False"
                               ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).Documents}">
                     <DocumentDock.DocumentTemplate>
-                        <DocumentTemplate>
-                            <aedit:TextEditor ShowLineNumbers="True"
-                                              FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+                        <DocumentTemplate x:DataType="Document">
+                            <ContentControl DataContext="{Binding Context}">
+                                <edit:TextEditor Name="Editor"
+                                                 ShowLineNumbers="True"
+                                                 x:DataType="vm:FileDocument"
+                                                 DocumentChanged="Editor_OnDocumentChanged"
+                                                 Document="{Binding Document}"
+                                                 FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+                                    <edit:TextEditor.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="Copy"
+                                                      InputGesture="ctrl+C"
+                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).CopyMouseCommand}"
+                                                      CommandParameter="{Binding #Editor.TextArea}" />
+
+                                            <MenuItem Header="Cut"
+                                                      InputGesture="ctrl+X"
+                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).CutMouseCommand}"
+                                                      CommandParameter="{Binding #Editor.TextArea}" />
+
+                                            <MenuItem Header="Paste"
+                                                      InputGesture="ctrl+V"
+                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).PasteMouseCommand}"
+                                                      CommandParameter="{Binding #Editor.TextArea}" />
+
+                                            <MenuItem Header="-" />
+
+                                            <MenuItem Header="Select All"
+                                                      InputGesture="ctrl+A"
+                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectAllMouseCommand}"
+                                                      CommandParameter="{Binding #Editor.TextArea}" />
+                                        </MenuFlyout>
+                                    </edit:TextEditor.ContextFlyout>
+                                </edit:TextEditor>
+                            </ContentControl>
                         </DocumentTemplate>
                     </DocumentDock.DocumentTemplate>
                 </DocumentDock>
