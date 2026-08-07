@@ -47,6 +47,10 @@
 
                 <DocumentDock Proportion="0.75"
                               ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).Documents}">
+                    <DocumentDock.ItemContainerGenerator>
+                        <models:FileDocumentTitleGenerator/>
+                    </DocumentDock.ItemContainerGenerator>
+                    
                     <DocumentDock.DocumentTemplate>
                         <DocumentTemplate x:DataType="Document">
                             <ContentControl DataContext="{Binding Context}">
