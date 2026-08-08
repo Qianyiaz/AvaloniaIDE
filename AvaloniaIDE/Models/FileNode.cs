@@ -11,12 +11,12 @@ public class FileNode(string title, AvaloniaList<FileNode?>? subNodes, IStorageI
 
     public IStorageItem? StorageItem { get; } = storageItem;
 
-    public static async Task LoadChildren(FileNode? folder)
+    public static async Task LoadChildren(FileNode folder)
     {
-        folder?.SubNodes!.Clear();
+        folder.SubNodes!.Clear();
 
-        await foreach (var item in (folder?.StorageItem as IStorageFolder)!.GetItemsAsync())
-            folder?.SubNodes!.Add(item switch
+        await foreach (var item in (folder.StorageItem as IStorageFolder)?.GetItemsAsync()!)
+            folder.SubNodes.Add(item switch
             {
                 IStorageFolder subfolder => new FileNode(subfolder.Name, [null], subfolder),
                 IStorageFile file => new FileNode(file.Name, null, file),

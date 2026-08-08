@@ -22,12 +22,13 @@
                             SelectedItem="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectedFileItem}"
                             ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).FileItems}">
                             <TreeView.Styles>
-                                <Style Selector="TreeViewItem">
+                                <Style Selector="TreeViewItem[IsExpanded=False]">
                                     <Setter Property="(Interaction.Behaviors)">
                                         <BehaviorCollectionTemplate>
                                             <BehaviorCollection>
                                                 <TreeViewItemExpandedEventCommandTrigger
-                                                    Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).TreeViewItemExpandedCommand}" />
+                                                    Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).TreeViewItemExpandedCommand}"
+                                                    Parameter="{Binding $parent[TreeViewItem].DataContext}" />
                                             </BehaviorCollection>
                                         </BehaviorCollectionTemplate>
                                     </Setter>
@@ -64,25 +65,21 @@
                                         <MenuFlyout>
                                             <MenuItem Header="Copy"
                                                       InputGesture="ctrl+C"
-                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).CopyMouseCommand}"
-                                                      CommandParameter="{Binding #Editor.TextArea}" />
+                                                      Command="{x:Static edit:ApplicationCommands.Copy}" />
 
                                             <MenuItem Header="Cut"
                                                       InputGesture="ctrl+X"
-                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).CutMouseCommand}"
-                                                      CommandParameter="{Binding #Editor.TextArea}" />
+                                                      Command="{x:Static edit:ApplicationCommands.Cut}" />
 
                                             <MenuItem Header="Paste"
                                                       InputGesture="ctrl+V"
-                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).PasteMouseCommand}"
-                                                      CommandParameter="{Binding #Editor.TextArea}" />
+                                                      Command="{x:Static edit:ApplicationCommands.Paste}" />
 
                                             <MenuItem Header="-" />
 
                                             <MenuItem Header="Select All"
                                                       InputGesture="ctrl+A"
-                                                      Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectAllMouseCommand}"
-                                                      CommandParameter="{Binding #Editor.TextArea}" />
+                                                      Command="{x:Static edit:ApplicationCommands.SelectAll}" />
                                         </MenuFlyout>
                                     </edit:TextEditor.ContextFlyout>
                                 </edit:TextEditor>

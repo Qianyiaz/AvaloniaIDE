@@ -7,5 +7,5 @@ namespace AvaloniaIDE.Services;
 [ServiceProvider]
 [Singleton<MainWindow>]
 [Transient<MainWindowViewModel>]
-[Singleton<IMainWindowService, MainWindowService>]
+[Singleton<IWindowManager, WindowManager>]
 public partial class AppServiceProvider;
