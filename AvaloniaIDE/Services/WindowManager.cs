@@ -21,7 +21,7 @@ public class WindowManager : IWindowManager
     private Window? MainWindow => (Application.Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!
         .MainWindow;
 
-    public void ShowEditWindow(IStorageFile file, Action? onLoaded, Action? onClosed)
+    public void ShowEditWindow(IStorageFile file, Action? onLoaded = null, Action? onClosed = null)
     {
         var editWindow = new EditWindow
         {
