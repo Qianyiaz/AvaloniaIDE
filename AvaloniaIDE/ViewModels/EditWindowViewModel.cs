@@ -1,8 +1,5 @@
 ﻿using Avalonia.Collections;
-using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using AvaloniaEdit;
-using AvaloniaEdit.Editing;
 using AvaloniaIDE.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,7 +10,7 @@ public partial class EditWindowViewModel : ObservableObject
 {
     [ObservableProperty] private FileNode? _selectedFileItem;
 
-    public EditWindowViewModel(IStorageFile storageFile) => _ = LoadDocumentAsync(storageFile);
+    public EditWindowViewModel(IStorageFile storageFile) => _ = InitializeAsync(storageFile);
 
     public AvaloniaList<FileDocument> Documents { get; } = [];
 
@@ -22,13 +19,13 @@ public partial class EditWindowViewModel : ObservableObject
     async partial void OnSelectedFileItemChanged(FileNode? value)
     {
         if (value?.StorageItem is not IStorageFile file) return;
-        if (Documents.Any(d => d.StorageItem!.Path == file.Path)) return;
+        if (Documents.All(d => d.StorageItem!.Path != file.Path))
+            Documents.Add(await FileDocument.CreateAsync(file));
 
-        Documents.Add(await FileDocument.CreateAsync(file));
-        SelectedFileItem = null;
+        SetProperty(ref _selectedFileItem, null, nameof(SelectedFileItem));
     }
 
-    private async Task LoadDocumentAsync(IStorageFile storageFile)
+    private async Task InitializeAsync(IStorageFile storageFile)
     {
         await foreach (var item in (await storageFile.GetParentAsync())!.GetItemsAsync())
             FileItems.Add(item switch
@@ -42,21 +39,9 @@ public partial class EditWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task TreeViewItemExpanded(TreeViewItem item) =>
-        await FileNode.LoadChildren(item.DataContext as FileNode);
-
-    [RelayCommand]
-    private void CopyMouse(TextArea textArea) => ApplicationCommands.Copy.Execute(null, textArea);
-
-    [RelayCommand]
-    private void CutMouse(TextArea textArea) => ApplicationCommands.Cut.Execute(null, textArea);
-
-    [RelayCommand]
-    private void PasteMouse(TextArea textArea) => ApplicationCommands.Paste.Execute(null, textArea);
-
-    [RelayCommand]
-    private void SelectAllMouse(TextArea textArea) => ApplicationCommands.SelectAll.Execute(null, textArea);
-
-    [RelayCommand]
-    private void UndoMouse(TextArea textArea) => ApplicationCommands.Undo.Execute(null, textArea);
+    private async Task TreeViewItemExpanded(FileNode? node)
+    {
+        if (node != null)
+            await FileNode.LoadChildren(node);
+    }
 }
