@@ -1,93 +1,130 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:AvaloniaIDE.ViewModels"
         xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:vm="using:AvaloniaIDE.ViewModels"
+        xmlns:dha="using:DialogHostAvalonia"
         xmlns:models="using:AvaloniaIDE.Models"
         x:Class="AvaloniaIDE.Views.EditWindow"
         x:DataType="vm:EditWindowViewModel"
         Name="RootWindow"
         Title="EditWindow">
-    <DockControl InitializeLayout="True" InitializeFactory="True">
-        <DockControl.Factory>
-            <Factory />
-        </DockControl.Factory>
-        <RootDock>
-            <ProportionalDock>
-                <ToolDock Proportion="0.25" CanClose="False">
-                    <Tool Id="SolutionTool" Title="Solution" CanClose="False">
-                        <TextBlock Text="To Do,Try File System." />
-                    </Tool>
-                    <Tool Id="FileTool" Title="File System" CanClose="False">
-                        <TreeView
-                            SelectedItem="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectedFileItem}"
-                            ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).FileItems}">
-                            <TreeView.Styles>
-                                <Style Selector="TreeViewItem[IsExpanded=False]">
-                                    <Setter Property="(Interaction.Behaviors)">
-                                        <BehaviorCollectionTemplate>
-                                            <BehaviorCollection>
-                                                <TreeViewItemExpandedEventCommandTrigger
-                                                    Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).TreeViewItemExpandedCommand}"
-                                                    Parameter="{Binding $parent[TreeViewItem].DataContext}" />
-                                            </BehaviorCollection>
-                                        </BehaviorCollectionTemplate>
-                                    </Setter>
-                                </Style>
-                            </TreeView.Styles>
+    <dha:DialogHost CloseOnClickAway="True">
+        <dha:DialogHost.DialogContentTemplate>
+            <DataTemplate x:DataType="models:FileNode">
+                <StackPanel MinWidth="200" Spacing="15">
+                    <TextBlock FontSize="18"
+                               Foreground="Red"
+                               Text="{Binding Title,StringFormat='{}Are you sure to delete {0}?'}" />
 
-                            <TreeView.ItemTemplate>
-                                <TreeDataTemplate ItemsSource="{Binding SubNodes}">
-                                    <TextBlock Text="{Binding Title}" />
-                                </TreeDataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </Tool>
-                </ToolDock>
+                    <Panel>
+                        <Button Content="Close"
+                                IsCancel="True"
+                                HorizontalAlignment="Left"
+                                Command="{Binding $parent[dha:DialogHost].CloseDialogCommand}" />
 
-                <ProportionalDockSplitter CanResize="True" />
+                        <Button Content="OK"
+                                IsDefault="True"
+                                HorizontalAlignment="Right"
+                                Command="{Binding $parent[dha:DialogHost].CloseDialogCommand}"
+                                CommandParameter="yes" />
+                    </Panel>
+                </StackPanel>
+            </DataTemplate>
+        </dha:DialogHost.DialogContentTemplate>
 
-                <DocumentDock Proportion="0.75"
-                              ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).Documents}">
-                    <DocumentDock.ItemContainerGenerator>
-                        <models:FileDocumentTitleGenerator />
-                    </DocumentDock.ItemContainerGenerator>
+        <DockControl InitializeLayout="True" InitializeFactory="True">
+            <DockControl.Factory>
+                <Factory />
+            </DockControl.Factory>
+            <RootDock>
+                <ProportionalDock>
+                    <ToolDock Proportion="0.25" CanClose="False">
+                        <Tool Id="SolutionTool" Title="Solution" CanClose="False">
+                            <TextBlock Text="To Do,Try File System." />
+                        </Tool>
+                        <Tool Id="FileTool" Title="File System" CanClose="False">
+                            <TreeView
+                                SelectedItem="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).SelectedFileItem}"
+                                ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).FileItems}">
+                                <TreeView.Styles>
+                                    <Style Selector="TreeViewItem">
+                                        <Style Selector="^[IsExpanded=False]">
+                                            <Setter Property="(Interaction.Behaviors)">
+                                                <BehaviorCollectionTemplate>
+                                                    <BehaviorCollection>
+                                                        <TreeViewItemExpandedEventCommandTrigger
+                                                            Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).TreeViewItemExpandedCommand}"
+                                                            Parameter="{Binding $parent[TreeViewItem].DataContext}" />
+                                                    </BehaviorCollection>
+                                                </BehaviorCollectionTemplate>
+                                            </Setter>
+                                        </Style>
 
-                    <DocumentDock.DocumentTemplate>
-                        <DocumentTemplate x:DataType="Document">
-                            <ContentControl DataContext="{Binding Context}">
-                                <edit:TextEditor Name="Editor"
-                                                 ShowLineNumbers="True"
-                                                 x:DataType="models:FileDocument"
-                                                 DocumentChanged="Editor_OnDocumentChanged"
-                                                 Document="{Binding Document}"
-                                                 FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
-                                    <edit:TextEditor.ContextFlyout>
-                                        <MenuFlyout>
-                                            <MenuItem Header="Copy"
-                                                      InputGesture="ctrl+C"
-                                                      Command="{x:Static edit:ApplicationCommands.Copy}" />
+                                        <Setter Property="ContextFlyout">
+                                            <MenuFlyout>
+                                                <MenuItem Header="Delete"
+                                                          Background="Red"
+                                                          Command="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).ShowDeleteDialogCommand}"
+                                                          CommandParameter="{Binding $parent[TreeViewItem].DataContext}" />
+                                            </MenuFlyout>
+                                        </Setter>
+                                    </Style>
+                                </TreeView.Styles>
 
-                                            <MenuItem Header="Cut"
-                                                      InputGesture="ctrl+X"
-                                                      Command="{x:Static edit:ApplicationCommands.Cut}" />
+                                <TreeView.ItemTemplate>
+                                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                                        <TextBlock Text="{Binding Title}" />
+                                    </TreeDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                        </Tool>
+                    </ToolDock>
 
-                                            <MenuItem Header="Paste"
-                                                      InputGesture="ctrl+V"
-                                                      Command="{x:Static edit:ApplicationCommands.Paste}" />
+                    <ProportionalDockSplitter CanResize="True" />
 
-                                            <MenuItem Header="-" />
+                    <DocumentDock Proportion="0.75"
+                                  ItemsSource="{Binding #RootWindow.((vm:EditWindowViewModel)DataContext).Documents}">
+                        <DocumentDock.ItemContainerGenerator>
+                            <models:FileDocumentTitleGenerator />
+                        </DocumentDock.ItemContainerGenerator>
 
-                                            <MenuItem Header="Select All"
-                                                      InputGesture="ctrl+A"
-                                                      Command="{x:Static edit:ApplicationCommands.SelectAll}" />
-                                        </MenuFlyout>
-                                    </edit:TextEditor.ContextFlyout>
-                                </edit:TextEditor>
-                            </ContentControl>
-                        </DocumentTemplate>
-                    </DocumentDock.DocumentTemplate>
-                </DocumentDock>
-            </ProportionalDock>
-        </RootDock>
-    </DockControl>
+                        <DocumentDock.DocumentTemplate>
+                            <DocumentTemplate x:DataType="Document">
+                                <ContentControl DataContext="{Binding Context}">
+                                    <edit:TextEditor Name="Editor"
+                                                     ShowLineNumbers="True"
+                                                     x:DataType="models:FileDocument"
+                                                     DocumentChanged="Editor_OnDocumentChanged"
+                                                     Document="{Binding Document}"
+                                                     FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+                                        <edit:TextEditor.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Copy"
+                                                          InputGesture="ctrl+C"
+                                                          Command="{x:Static edit:ApplicationCommands.Copy}" />
+
+                                                <MenuItem Header="Cut"
+                                                          InputGesture="ctrl+X"
+                                                          Command="{x:Static edit:ApplicationCommands.Cut}" />
+
+                                                <MenuItem Header="Paste"
+                                                          InputGesture="ctrl+V"
+                                                          Command="{x:Static edit:ApplicationCommands.Paste}" />
+
+                                                <MenuItem Header="-" />
+
+                                                <MenuItem Header="Select All"
+                                                          InputGesture="ctrl+A"
+                                                          Command="{x:Static edit:ApplicationCommands.SelectAll}" />
+                                            </MenuFlyout>
+                                        </edit:TextEditor.ContextFlyout>
+                                    </edit:TextEditor>
+                                </ContentControl>
+                            </DocumentTemplate>
+                        </DocumentDock.DocumentTemplate>
+                    </DocumentDock>
+                </ProportionalDock>
+            </RootDock>
+        </DockControl>
+    </dha:DialogHost>
 </Window>
