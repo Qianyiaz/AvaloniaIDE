@@ -23,7 +23,7 @@
         <PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.0"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1"/>
         <PackageReference Include="Xaml.Behaviors.Avalonia" Version="12.0.5"/>
-        <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="12.1.0"/>
+        <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="12.1.0.4"/>
         <PackageReference Include="Xaml.Behaviors.SourceGenerators" Version="12.0.5" PrivateAssets="All"/>
     </ItemGroup>
 
